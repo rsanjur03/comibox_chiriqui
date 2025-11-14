@@ -1,0 +1,130 @@
+---
+// PARTE 1: CÓDIGO DEL SERVIDOR
+import { db } from '../../lib/firebase.js';
+import { collection, getDocs, getDoc, doc, query, where, orderBy } from 'firebase/firestore';
+import Nav from '../../components/Nav.astro';
+
+// --- A. GETSTATICPATHS ---
+// Esto le dice a Astro cuántas páginas crear
+export async function getStaticPaths() {
+  const boxeadoresRef = collection(db, "boxeadores");
+  const snapshot = await getDocs(boxeadoresRef);
+
+  // Creamos un array de páginas
+  const paths = snapshot.docs.map(doc => ({
+    params: { id: doc.id }, // La URL será /boxeador/ID_DE_FIREBASE
+  }));
+
+  return paths;
+}
+
+// --- B. CÓDIGO DE PÁGINA ---
+// Esto se ejecuta para CADA página generada
+const { id } = Astro.params; // Obtenemos el ID de la URL
+
+// 1. Buscar los datos del boxeador específico
+const boxeadorRef = doc(db, "boxeadores", id);
+const boxeadorSnap = await getDoc(boxeadorRef);
+const boxeador = boxeadorSnap.data();
+
+// 2. Buscar todas sus peleas
+async function getPeleas(boxeadorId) {
+  const peleasRef = collection(db, "peleas");
+
+  // Hacemos DOS consultas: una buscándolo como A y otra como B
+  const qA = query(peleasRef, where("boxeadorA_Id", "==", boxeadorId));
+  const qB = query(peleasRef, where("boxeadorB_Id", "==", boxeadorId));
+
+  const [peleasASnap, peleasBSnap] = await Promise.all([
+    getDocs(qA),
+    getDocs(qB)
+  ]);
+
+  const peleasA = peleasASnap.docs.map(doc => doc.data());
+  const peleasB = peleasBSnap.docs.map(doc => doc.data());
+
+  // Combinamos los resultados y los ordenamos por el nombre del evento (que incluye la fecha)
+  const todasLasPeleas = [...peleasA, ...peleasB];
+  todasLasPeleas.sort((a, b) => b.eventoNombre.localeCompare(a.eventoNombre)); // Más nuevas primero
+
+  return todasLasPeleas;
+}
+
+const peleas = await getPeleas(id);
+---
+
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{boxeador.nombre} - Récord - COMIBOX Chiriquí</title>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    
+    <Nav />
+
+    <div class="container mx-auto p-8">
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-800">{boxeador.nombre}</h1>
+            <p class="text-2xl text-gray-600">
+                Récord: 
+                <span class="font-bold text-green-600">{boxeador.victorias}</span> - 
+                <span class="font-bold text-red-600">{boxeador.derrotas}</span> - 
+                <span class="font-bold text-gray-500">{boxeador.empates}</span>
+            </p>
+        </div>
+
+        <h2 class="text-3xl font-semibold text-gray-700 mb-6">Historial de Peleas</h2>
+        <div class="bg-white rounded-lg shadow-lg overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50 border-b-2 border-gray-200">
+                    <tr>
+                        <th class="p-4 text-left text-sm font-semibold text-gray-600">Evento</th>
+                        <th class="p-4 text-left text-sm font-semibold text-gray-600">Oponente</th>
+                        <th class="p-4 text-center text-sm font-semibold text-gray-600">Resultado</th>
+                        <th class="p-4 text-center text-sm font-semibold text-gray-600">Método</th>
+                        <th class="p-4 text-center text-sm font-semibold text-gray-600">Round</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {peleas.length === 0 ? (
+                        <tr>
+                            <td colspan="5" class="p-4 text-center text-gray-500">
+                                No hay historial de peleas registrado.
+                            </td>
+                        </tr>
+                    ) : (
+                        peleas.map(pelea => {
+                            // Determinamos quién fue el oponente
+                            const esBoxeadorA = pelea.boxeadorA_Id === id;
+                            const oponenteNombre = esBoxeadorA ? pelea.boxeadorB_Nombre : pelea.boxeadorA_Nombre;
+                            
+                            // Determinamos el resultado (Victoria, Derrota, Empate)
+                            let resultadoTexto = "PENDIENTE";
+                            if (pelea.resultado_ganador === 'A' && esBoxeadorA) resultadoTexto = 'Victoria';
+                            else if (pelea.resultado_ganador === 'B' && !esBoxeadorA) resultadoTexto = 'Victoria';
+                            else if (pelea.resultado_ganador === 'A' || pelea.resultado_ganador === 'B') resultadoTexto = 'Derrota';
+                            else if (pelea.resultado_ganador === 'EMPATE') resultadoTexto = 'Empate';
+                            else if (pelea.resultado_ganador === 'NC') resultadoTexto = 'NC';
+
+                            return (
+                                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                    <td class="p-4 font-medium text-gray-800">{pelea.eventoNombre.split(' - ')[1]}</td>
+                                    <td class="p-4 text-gray-700">{oponenteNombre.split(' (')[0]}</td>
+                                    <td class={`p-4 text-center font-semibold ${
+                                        resultadoTexto === 'Victoria' ? 'text-green-600' :
+                                        resultadoTexto === 'Derrota' ? 'text-red-600' : 'text-gray-500'
+                                    }`}>{resultadoTexto}</td>
+                                    <td class="p-4 text-center text-gray-700">{pelea.resultado_metodo || '--'}</td>
+                                    <td class="p-4 text-center text-gray-700">{pelea.resultado_round || '--'}</td>
+                                </tr>
+                            )
+                        })
+                    )}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

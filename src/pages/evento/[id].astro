@@ -1,0 +1,123 @@
+---
+// PARTE 1: CÓDIGO DEL SERVIDOR
+import { db } from '../../lib/firebase.js';
+import { collection, getDocs, getDoc, doc, query, where, orderBy } from 'firebase/firestore';
+import Nav from '../../components/Nav.astro';
+
+// --- A. GETSTATICPATHS ---
+// Le dice a Astro cuántas páginas de eventos crear
+export async function getStaticPaths() {
+  const eventosRef = collection(db, "eventos");
+  const snapshot = await getDocs(eventosRef);
+
+  const paths = snapshot.docs.map(doc => ({
+    params: { id: doc.id }, // La URL será /evento/ID_DE_FIREBASE
+  }));
+
+  return paths;
+}
+
+// --- B. CÓDIGO DE PÁGINA ---
+// Esto se ejecuta para CADA página de evento
+const { id } = Astro.params; // Obtenemos el ID del evento desde la URL
+
+// 1. Buscar los datos del evento específico
+const eventoRef = doc(db, "eventos", id);
+const eventoSnap = await getDoc(eventoRef);
+const evento = eventoSnap.data();
+
+// 2. Buscar todas las peleas de ESTE evento
+async function getPeleas(eventoId) {
+  const peleasRef = collection(db, "peleas");
+
+  // Creamos una consulta:
+  // 1. Donde 'eventoId' sea IGUAL a nuestro ID
+  // 2. Ordenadas por 'orden' (1, 2, 3... Co-estelar, Estelar)
+  const q = query(
+    peleasRef, 
+    where("eventoId", "==", eventoId), 
+    orderBy("orden", "asc")
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  return querySnapshot.docs.map(doc => doc.data());
+}
+
+const peleas = await getPeleas(id);
+---
+
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{evento.nombre} - Cartelera - COMIBOX Chiriquí</title>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    
+    <Nav />
+
+    <div class="container mx-auto p-8">
+        <div class="mb-8 p-6 bg-white rounded-lg shadow">
+            <h1 class="text-4xl font-bold text-gray-800">{evento.nombre}</h1>
+            <p class="text-xl text-gray-600 mt-2">
+                <strong>Fecha:</strong> {evento.fecha} | 
+                <strong>Lugar:</strong> {evento.lugar}
+            </p>
+            <p class="text-lg text-gray-500 mt-1">
+                <strong>Promotor:</strong> {evento.promotor}
+            </p>
+        </div>
+
+        <h2 class="text-3xl font-semibold text-gray-700 mb-6">Cartelera de Peleas</h2>
+        
+        <div class="space-y-4">
+            {peleas.length === 0 ? (
+                <div class="bg-white rounded-lg shadow p-4 text-center text-gray-500">
+                    No hay peleas registradas para este evento.
+                </div>
+            ) : (
+                peleas.map(pelea => (
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-lg font-semibold text-gray-700">
+                                    {pelea.categoria || 'Peso Pactado'}
+                                </span>
+                                <span class="text-sm font-medium text-gray-500">
+                                    {pelea.roundsPactados} rounds
+                                </span>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 items-center text-center">
+                                <div class="text-left">
+                                    <a href={`/boxeador/${pelea.boxeadorA_Id}`} class="text-xl font-bold text-blue-600 hover:underline">
+                                        {pelea.boxeadorA_Nombre.split(' (')[0]}
+                                    </a>
+                                    <p class="text-gray-600">{pelea.boxeadorA_Peso} lbs</p>
+                                </div>
+                                <div class="text-2xl font-bold text-gray-400">vs</div>
+                                <div class="text-right">
+                                    <a href={`/boxeador/${pelea.boxeadorB_Id}`} class="text-xl font-bold text-blue-600 hover:underline">
+                                        {pelea.boxeadorB_Nombre.split(' (')[0]}
+                                    </a>
+                                    <p class="text-gray-600">{pelea.boxeadorB_Peso} lbs</p>
+                                </div>
+                            </div>
+                            
+                            {pelea.resultado_ganador !== 'PENDIENTE' && (
+                                <div class="mt-4 pt-4 border-t border-gray-200 text-center">
+                                    <p class="font-semibold text-gray-800">
+                                        Resultado: {pelea.resultado_metodo} en el round {pelea.resultado_round}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                ))
+            )}
+        </div>
+    </div>
+</body>
+</html>
