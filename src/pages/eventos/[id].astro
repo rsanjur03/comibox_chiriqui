@@ -1,0 +1,210 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+import { db } from '../../lib/firebase.js';
+import { collection, getDocs, getDoc, doc, query, where, orderBy } from 'firebase/firestore';
+
+export async function getStaticPaths() {
+  const eventosRef = collection(db, 'eventos');
+  const snapshot = await getDocs(eventosRef);
+  const paths = snapshot.docs.map((d) => ({ params: { id: d.id } }));
+  return paths;
+}
+
+const { id } = Astro.params;
+const eventoRef = doc(db, 'eventos', id);
+const eventoSnap = await getDoc(eventoRef);
+const evento = eventoSnap.data();
+
+async function getPeleas(eventoId: string) {
+  const peleasRef = collection(db, 'peleas');
+  const q = query(peleasRef, where('eventoId', '==', eventoId), orderBy('orden', 'asc'));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((d) => d.data() as any);
+}
+
+const peleas = await getPeleas(id!);
+
+// Precompute display fields to keep JSX simple
+const peleasView = (peleas as any[]).map((p) => {
+  const vKO_A = p.boxeadorA_victoriasKO > 0 ? `(${p.boxeadorA_victoriasKO})` : '';
+  const dKO_A = p.boxeadorA_derrotasKO > 0 ? `(${p.boxeadorA_derrotasKO})` : '';
+  const recordA = `${p.boxeadorA_Victorias}${vKO_A}-${p.boxeadorA_Derrotas}${dKO_A}-${p.boxeadorA_Empates}`;
+  const vKO_B = p.boxeadorB_victoriasKO > 0 ? `(${p.boxeadorB_victoriasKO})` : '';
+  const dKO_B = p.boxeadorB_derrotasKO > 0 ? `(${p.boxeadorB_derrotasKO})` : '';
+  const recordB = `${p.boxeadorB_Victorias}${vKO_B}-${p.boxeadorB_Derrotas}${dKO_B}-${p.boxeadorB_Empates}`;
+  const resultado = p.resultado_ganador ? `Ganador: ${p.resultado_ganador} por ${p.resultado_metodo} (Ronda ${p.resultado_round})` : 'Pelea Pendiente';
+  const resultadoColor = p.resultado_ganador ? 'text-green-400 font-semibold' : 'text-yellow-400';
+  const pesoPactadoNum = parseFloat(p.pesoPactado) || Infinity;
+  const pesoANum = parseFloat(p.boxeadorA_Peso) || 0;
+  const pesoBNum = parseFloat(p.boxeadorB_Peso) || 0;
+  const colorA = pesoANum > 0 && pesoANum <= pesoPactadoNum ? 'text-green-400' : 'text-red-400';
+  const colorB = pesoBNum > 0 && pesoBNum <= pesoPactadoNum ? 'text-green-400' : 'text-red-400';
+  const pesoA = p.boxeadorA_Peso > 0 ? `${p.boxeadorA_Peso} lbs` : 'N/A';
+  const pesoB = p.boxeadorB_Peso > 0 ? `${p.boxeadorB_Peso} lbs` : 'N/A';
+  return {
+    ...p,
+    recordA,
+    recordB,
+    resultado,
+    resultadoColor,
+    colorA,
+    colorB,
+    pesoA,
+    pesoB,
+  };
+});
+
+---
+
+<BaseLayout title={`${evento?.nombre ?? 'Evento'} - COMIBOX Chiriquí`}>
+  <Header />
+  <main class="container mx-auto p-4 md:p-8">
+    <h1 class="text-4xl md:text-5xl font-extrabold text-white">{evento?.nombre ?? 'Evento no encontrado'}</h1>
+    <p class="text-xl text-gray-400 mb-8">
+      {evento ? (
+        <span>
+          <span>{evento.fecha}</span>
+          {evento.hora ? <span> ({evento.hora})</span> : null}
+          <span> | {evento.lugar}{evento.ciudad ? `, ${evento.ciudad}` : ''}{evento.provincia ? `, ${evento.provincia}` : ''}</span>
+        </span>
+      ) : '—'}
+    </p>
+
+    <div class="border-b border-gray-700 mb-6">
+      <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+        <button id="tab-detalles" class="tab-active text-blue-400 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg">Detalles del Evento</button>
+        <button id="tab-pesaje" class="text-gray-400 hover:text-gray-300 whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-lg">Pesaje</button>
+      </nav>
+    </div>
+
+    <div id="content-detalles" class="mt-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <div class="md:col-span-2 bg-gray-800 rounded-lg shadow-xl flex items-center justify-center p-4">
+          <div class="w-full h-auto max-h-[80vh] overflow-hidden">
+            {evento?.flyerURL ? (
+              <img src={evento.flyerURL} alt={`Flyer del Evento ${evento.nombre}`} class="w-full h-auto object-contain block max-h-full" />
+            ) : (
+              <div class="h-96 w-full bg-gray-700 flex flex-col items-center justify-center text-gray-400 p-8 text-center rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-2-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                <p class="text-xl">Flyer no disponible</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div class="md:col-span-1">
+          <h2 class="text-2xl font-bold text-blue-400 mb-4 border-b border-gray-700 pb-2">Detalles Clave</h2>
+          <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <table class="w-full text-left text-sm text-gray-400">
+              <tbody>
+                <tr class="border-b border-gray-700"><td class="py-3 px-4 font-semibold text-gray-300">Fecha</td><td class="py-3 px-4 text-white">{evento?.fecha ?? 'N/D'}</td></tr>
+                <tr class="border-b border-gray-700"><td class="py-3 px-4 font-semibold text-gray-300">Hora</td><td class="py-3 px-4 text-white">{evento?.hora ?? 'N/D'}</td></tr>
+                <tr class="border-b border-gray-700"><td class="py-3 px-4 font-semibold text-gray-300">Lugar</td><td class="py-3 px-4 text-white">{evento?.lugar ?? 'N/D'}</td></tr>
+                <tr class="border-b border-gray-700"><td class="py-3 px-4 font-semibold text-gray-300">Ciudad</td><td class="py-3 px-4 text-white">{evento?.ciudad ?? 'N/D'}</td></tr>
+                <tr><td class="py-3 px-4 font-semibold text-gray-300">Promotor</td><td class="py-3 px-4 text-white">{evento?.promotor ?? 'N/D'}</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="text-3xl font-bold text-white mb-6">Cartelera de Peleas</h2>
+      <ul id="lista-cartelera" class="space-y-6">
+        {peleasView.length === 0 ? (
+          <li class="text-gray-400">No hay peleas registradas para este evento.</li>
+        ) : (
+          peleasView.map((pelea) => (
+            <li class="bg-gray-800 p-6 rounded-lg shadow-lg border-l-4 border-blue-600">
+              <p class="text-sm text-gray-400 mb-2">{pelea.roundsPactados} Rounds | {pelea.categoria} ({pelea.pesoPactado || 'N/A'})</p>
+              <h3 class="text-2xl font-bold text-white mb-4">
+                {pelea.boxeadorA_Nombre} <span class="text-gray-400 font-normal">({pelea.recordA})</span>
+                {' '}vs.{' '}
+                {pelea.boxeadorB_Nombre} <span class="text-gray-400 font-normal">({pelea.recordB})</span>
+              </h3>
+              <p class={pelea.resultadoColor}>{pelea.resultado}</p>
+            </li>
+          ))
+        )}
+      </ul>
+    </div>
+
+    <div id="content-pesaje" class="mt-6" style="display:none;">
+      <h2 class="text-3xl font-bold text-white mb-6">Resultados del Pesaje Oficial</h2>
+      <ul id="lista-pesaje" class="space-y-6">
+        {peleasView.length === 0 ? (
+          <li class="text-gray-400">No hay peleas registradas para este evento.</li>
+        ) : (
+          peleasView.map((pelea) => (
+            <li class="bg-gray-800 p-6 rounded-lg shadow-lg">
+              <div class="mb-4">
+                <h3 class="text-xl font-bold text-white mb-1">{pelea.boxeadorA_Nombre} vs. {pelea.boxeadorB_Nombre}</h3>
+                <p class="text-sm text-gray-400">{pelea.categoria} | {pelea.pesoPactado} lbs Pactadas</p>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-3">
+                  <div class="flex justify-between items-center text-lg border-b border-gray-700 pb-1">
+                    <span class="font-medium text-gray-300">{pelea.boxeadorA_Nombre}:</span>
+                    <span class={pelea.colorA + ' font-bold'}>{pelea.pesoA}</span>
+                  </div>
+                  <div class="flex justify-between items-center text-lg border-b border-gray-700 pb-1">
+                    <span class="font-medium text-gray-300">{pelea.boxeadorB_Nombre}:</span>
+                    <span class={pelea.colorB + ' font-bold'}>{pelea.pesoB}</span>
+                  </div>
+                </div>
+                <div class="flex flex-col items-center justify-center">
+                  {pelea.caraACaraURL ? (
+                    <img src={pelea.caraACaraURL} alt="Foto Cara a Cara" class="w-full h-auto object-cover rounded-lg shadow-md max-h-48" />
+                  ) : (
+                    <div class="w-full h-40 rounded-lg flex items-center justify-center" style="background-color:#374151;border:2px dashed #4b5563;">
+                      <p class="text-gray-500 text-sm">Foto C/C no disponible</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              {pelea.notasPesaje ? (
+                <div class="mt-4 text-xs text-yellow-300 bg-gray-900 p-3 rounded border border-yellow-700">
+                  <strong class="text-yellow-400 block mb-1">Nota de Pesaje:</strong>
+                  <p>{pelea.notasPesaje}</p>
+                </div>
+              ) : null}
+            </li>
+          ))
+        )}
+      </ul>
+    </div>
+
+    <script>
+      const tabDetalles = document.getElementById('tab-detalles');
+      const tabPesaje = document.getElementById('tab-pesaje');
+      const contentDetalles = document.getElementById('content-detalles');
+      const contentPesaje = document.getElementById('content-pesaje');
+
+      function setActive(tab) {
+        if (tab === 'detalles') {
+          tabDetalles?.classList.add('tab-active', 'text-blue-400');
+          tabDetalles?.classList.remove('text-gray-400', 'hover:text-gray-300', 'border-transparent');
+          tabPesaje?.classList.remove('tab-active', 'text-blue-400');
+          tabPesaje?.classList.add('text-gray-400', 'hover:text-gray-300', 'border-transparent');
+          if (contentDetalles) contentDetalles.style.display = 'block';
+          if (contentPesaje) contentPesaje.style.display = 'none';
+
+        } else {
+          tabPesaje?.classList.add('tab-active', 'text-blue-400');
+          tabPesaje?.classList.remove('text-gray-400', 'hover:text-gray-300', 'border-transparent');
+          tabDetalles?.classList.remove('tab-active', 'text-blue-400');
+          tabDetalles?.classList.add('text-gray-400', 'hover:text-gray-300', 'border-transparent');
+          if (contentDetalles) contentDetalles.style.display = 'none';
+          if (contentPesaje) contentPesaje.style.display = 'block';
+
+        }
+      }
+
+      tabDetalles?.addEventListener('click', () => setActive('detalles'));
+      tabPesaje?.addEventListener('click', () => setActive('pesaje'));
+    </script>
+  </main>
+  <Footer />
+</BaseLayout>

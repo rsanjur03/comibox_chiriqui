@@ -1,80 +1,73 @@
 ---
-// PARTE 1: CÓDIGO DEL SERVIDOR
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BoxersHeader from '../components/BoxersHeader.astro';
+import BoxersGrid from '../components/BoxersGrid.astro';
+import BoxersTable from '../components/BoxersTable.astro';
 
-// Importamos el menú que acabamos de crear
-import Nav from '../components/Nav.astro';
-
-// Importamos la base de datos y las funciones de Firestore
 import { db } from '../lib/firebase.js';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
-// Función para obtener los boxeadores, ordenados por nombre
-async function getBoxeadores() {
-  const boxeadoresRef = collection(db, "boxeadores");
-  const q = query(boxeadoresRef, orderBy("nombre", "asc"));
+type Boxer = {
+  id: string;
+  nombre: string;
+  alias?: string;
+  fotoURL?: string;
+  victorias: number;
+  derrotas: number;
+  empates: number;
+  victoriasKO?: number;
+  derrotasKO?: number;
+  provincia?: string;
+  paisProcedencia?: string;
+  guardia?: string;
+  altura?: number;
+  alcance?: number;
+  fechaNacimiento?: string;
+};
 
-  const querySnapshot = await getDocs(q);
-
-  return querySnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
+async function getBoxeadores(): Promise<Boxer[]> {
+  const boxeadoresRef = collection(db, 'boxeadores');
+  const q = query(boxeadoresRef, orderBy('nombre', 'asc'));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(d => ({ id: d.id, ...(d.data() as any) }));
 }
 
-// Ejecutamos la función
 const boxeadores = await getBoxeadores();
 ---
+<BaseLayout title="Boxeadores - COMIBOX Chiriquí">
+  <Header />
+  <main class="grow container mx-auto p-4 md:p-8">
+    <BoxersHeader activeView="lista" />
+    <BoxersTable boxeadores={boxeadores} />
+    <BoxersGrid boxeadores={boxeadores} />
 
-<html lang="es">
-<head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Récord de Boxeadores - COMIBOX Chiriquí</title>
-</head>
-<body class="bg-gray-100 min-h-screen">
+    <script>
+      const btnVistaLista = document.getElementById('btn-vista-lista');
+      const btnVistaTarjetas = document.getElementById('btn-vista-tarjetas');
+      const gridContainer = document.getElementById('lista-boxeadores-grid');
+      const tablaContainer = document.getElementById('lista-boxeadores-tabla');
 
-    <Nav />
-
-    <div class="container mx-auto p-8">
-        <h1 class="text-3xl font-semibold text-gray-700 mb-6">
-            Récord Oficial de Boxeadores
-        </h1>
-
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-            <table class="w-full">
-                <thead class="bg-gray-50 border-b-2 border-gray-200">
-                    <tr>
-                        <th class="p-4 text-left text-sm font-semibold text-gray-600">Nombre</th>
-                        <th class="p-4 text-center text-sm font-semibold text-gray-600">Victorias</th>
-                        <th class="p-4 text-center text-sm font-semibold text-gray-600">Derrotas</th>
-                        <th class="p-4 text-center text-sm font-semibold text-gray-600">Empates</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {boxeadores.length === 0 ? (
-                        <tr>
-                            <td colspan="4" class="p-4 text-center text-gray-500">
-                                No hay boxeadores registrados.
-                            </td>
-                        </tr>
-                    ) : (
-                        boxeadores.map(boxeador => (
-                            <tr class="border-b border-gray-200 hover:bg-gray-50">
-                                <td class="p-4 font-medium text-gray-800">
-    <a href={`/boxeador/${boxeador.id}`} class="text-blue-600 hover:underline">
-        {boxeador.nombre}
-    </a>
-</td>
-                                <td class="p-4 text-center text-gray-700">{boxeador.victorias}</td>
-                                <td class="p-4 text-center text-gray-700">{boxeador.derrotas}</td>
-                                <td class="p-4 text-center text-gray-700">{boxeador.empates}</td>
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</body>
-</html>
+      if (btnVistaLista && btnVistaTarjetas && gridContainer && tablaContainer) {
+        btnVistaLista.addEventListener('click', () => {
+          tablaContainer.style.display = 'block';
+          gridContainer.style.display = 'none';
+          btnVistaLista.classList.add('bg-blue-600', 'text-white');
+          btnVistaLista.classList.remove('bg-gray-700', 'text-gray-300', 'hover:bg-gray-600');
+          btnVistaTarjetas.classList.add('bg-gray-700', 'text-gray-300', 'hover:bg-gray-600');
+          btnVistaTarjetas.classList.remove('bg-blue-600', 'text-white');
+        });
+        btnVistaTarjetas.addEventListener('click', () => {
+          tablaContainer.style.display = 'none';
+          gridContainer.style.display = 'grid';
+          btnVistaTarjetas.classList.add('bg-blue-600', 'text-white');
+          btnVistaTarjetas.classList.remove('bg-gray-700', 'text-gray-300', 'hover:bg-gray-600');
+          btnVistaLista.classList.add('bg-gray-700', 'text-gray-300', 'hover:bg-gray-600');
+          btnVistaLista.classList.remove('bg-blue-600', 'text-white');
+        });
+      }
+    </script>
+  </main>
+  <Footer />
+</BaseLayout>
