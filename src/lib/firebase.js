@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 // 1. Leemos las variables de entorno que acabas de crear
 const firebaseConfig = {
@@ -23,3 +24,7 @@ if (!getApps().length) {
 // 3. Exportamos app y la base de datos (db) para usarla en nuestras páginas
 export { app };
 export const db = getFirestore(app);
+export const storage = getStorage(app);
+
+// Exportar getAuth para usar en otros archivos
+export { getAuth } from "firebase/auth";

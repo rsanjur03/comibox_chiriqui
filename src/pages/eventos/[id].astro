@@ -60,7 +60,6 @@ const peleasView = (peleas as any[]).map((p) => {
 ---
 
 <BaseLayout title={`${evento?.nombre ?? 'Evento'} - COMIBOX Chiriquí`}>
-  <Header />
   <main class="container mx-auto p-4 md:p-8">
     <h1 class="text-4xl md:text-5xl font-extrabold text-white">{evento?.nombre ?? 'Evento no encontrado'}</h1>
     <p class="text-xl text-gray-400 mb-8">
@@ -182,7 +181,7 @@ const peleasView = (peleas as any[]).map((p) => {
       const contentDetalles = document.getElementById('content-detalles');
       const contentPesaje = document.getElementById('content-pesaje');
 
-      function setActive(tab) {
+      function setActive(tab: string) {
         if (tab === 'detalles') {
           tabDetalles?.classList.add('tab-active', 'text-blue-400');
           tabDetalles?.classList.remove('text-gray-400', 'hover:text-gray-300', 'border-transparent');
@@ -206,5 +205,4 @@ const peleasView = (peleas as any[]).map((p) => {
       tabPesaje?.addEventListener('click', () => setActive('pesaje'));
     </script>
   </main>
-  <Footer />
 </BaseLayout>

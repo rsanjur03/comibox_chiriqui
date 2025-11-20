@@ -4,8 +4,15 @@ const isActive = (href: string) => pathname === href || (href !== '/' && pathnam
 const linkCls = (href: string) => isActive(href)
   ? 'text-blue-400 font-semibold border-b-2 border-blue-400'
   : 'text-gray-300 hover:text-blue-400';
+
+
+const isAuthActive = (href: string) => pathname === href || (pathname.startsWith('/admin') && pathname.includes(href));
+const authLinkCls = (href: string) => isAuthActive(href)
+  ? 'text-blue-400 font-semibold border-b-2 border-blue-400 text-center'
+  : 'text-gray-400 hover:text-blue-400 text-center';
+
 ---
-<header class="bg-gray-900 border-b border-gray-700">
+<header class="bg-gray-900 border-b border-gray-700 print:hidden">
   <nav class="container mx-auto px-4 py-4 flex flex-col text-center md:flex-row md:justify-between md:items-center">
     <div class="mb-2 md:mb-0 flex items-center justify-center">
       <a href="/" class="flex items-center space-x-2">
@@ -13,11 +20,28 @@ const linkCls = (href: string) => isActive(href)
         <span class="text-2xl font-bold text-white">COMIBOX Chiriquí</span>
       </a>
     </div>
-    <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-6">
+    <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-6 items-center">
       <a href="/" class={linkCls('/') } aria-current={isActive('/') ? 'page' : undefined}>Inicio</a>
       <a href="/boxeadores" class={linkCls('/boxeadores')} aria-current={isActive('/boxeadores') ? 'page' : undefined}>Boxeadores</a>
       <a href="/eventos" class={linkCls('/eventos')} aria-current={isActive('/eventos') ? 'page' : undefined}>Eventos</a>
-      <a href="/admin" class={isActive('/admin') ? 'text-red-400 font-semibold' : 'text-gray-400 hover:text-red-400 text-sm'} aria-current={isActive('/admin') ? 'page' : undefined}>Admin</a>
+      <a id="admin-link" href="/admin" class={isActive('/admin') ? 'text-red-400 font-semibold' : 'text-gray-400 hover:text-red-400 text-sm'} aria-current={isActive('/admin') ? 'page' : undefined}>Admin</a>
+      <button id="btn-logout" class="hidden text-gray-300 hover:text-red-400 text-sm" type="button">Cerrar sesión</button>
     </div>
   </nav>
+  <div id="admin-nav" class="hidden container mx-auto px-4">
+    <nav class="bg-gray-800 rounded-lg shadow-md p-4 mb-8 flex space-x-4 overflow-x-auto">
+      <a href="/admin/boxeadores" class={authLinkCls('/admin/boxeadores')} aria-current={isAuthActive('/admin/boxeadores') ? 'page' : undefined}>Gestión de Boxeadores</a>
+      <a href="/admin/eventos" class={authLinkCls('/admin/eventos')} aria-current={isAuthActive('/admin/eventos') ? 'page' : undefined}>Gestión de Eventos</a>
+      <a href="/admin/peleas" class={authLinkCls('/admin/peleas')} aria-current={isAuthActive('/admin/peleas') ? 'page' : undefined}>Gestión de Peleas</a>
+      <a href="/admin/oficiales" class={authLinkCls('/admin/oficiales')} aria-current={isAuthActive('/admin/oficiales') ? 'page' : undefined}>Gestión de Oficiales</a>
+      <a href="/admin/asignaciones" class={authLinkCls('/admin/asignaciones')} aria-current={isAuthActive('/admin/asignaciones') ? 'page' : undefined}>Asignación de Oficiales</a>
+      <a href="/admin/pesaje" class={authLinkCls('/admin/pesaje')} aria-current={isAuthActive('/admin/pesaje') ? 'page' : undefined}>Gestión de Pesajes</a>
+      <a href="/admin/finanzas" class={authLinkCls('/admin/finanzas')} aria-current={isAuthActive('/admin/finanzas') ? 'page' : undefined}>Gestión de Finanzas</a>
+      <a href="/admin/reportes/pesaje" class={authLinkCls('/admin/reportes/pesaje')} aria-current={isAuthActive('/admin/reportes/pesaje') ? 'page' : undefined}>Generar Reportes</a>
+      <a href="/admin/reportes/resultado" class={authLinkCls('/admin/reportes/resultado')} aria-current={isAuthActive('/admin/reportes/resultado') ? 'page' : undefined}>Generar Reporte Resultado</a>
+      <a href="/admin/reportes/resumen" class={authLinkCls('/admin/reportes/resumen')} aria-current={isAuthActive('/admin/reportes/resumen') ? 'page' : undefined}>Reporte Resumen (Todos)</a>
+    </nav>
+  </div>
 </header>
+
+<script type="module" src="/src/scripts/header-auth.js"></script>

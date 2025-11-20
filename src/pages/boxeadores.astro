@@ -37,7 +37,6 @@ async function getBoxeadores(): Promise<Boxer[]> {
 const boxeadores = await getBoxeadores();
 ---
 <BaseLayout title="Boxeadores - COMIBOX Chiriquí">
-  <Header />
   <main class="grow container mx-auto p-4 md:p-8">
     <BoxersHeader activeView="lista" />
     <BoxersTable boxeadores={boxeadores} />
@@ -69,5 +68,4 @@ const boxeadores = await getBoxeadores();
       }
     </script>
   </main>
-  <Footer />
 </BaseLayout>
