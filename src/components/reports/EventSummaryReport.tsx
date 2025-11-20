@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { collection, getDocs, doc, getDoc, query, orderBy as firestoreOrderBy, where } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import FightSummaryCard from './FightSummaryCard';
+import logo from '../../assets/comiboxch_logo.jpg';
+
 
 interface Evento {
     id: string;
@@ -213,7 +215,7 @@ export default function EventSummaryReport() {
                     <header className="flex justify-between items-start border-b-2 border-gray-400 pb-4 mb-6">
                         <div>
                             <img 
-                                src="https://admin.comiboxchiriqui.com/imagenes/comiboxch_logo.jpg" 
+                                src={logo.src} 
                                 alt="Logo COMIBOX Chiriquí" 
                                 className="h-24"
                             />
