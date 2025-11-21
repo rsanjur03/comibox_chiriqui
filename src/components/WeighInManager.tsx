@@ -124,8 +124,7 @@ export default function WeighInManager() {
                     </div>
                     <div className="flex-shrink-0">
                         <a
-                            href={selectedEventoId ? `/admin/reporte-pesaje?id=${selectedEventoId}` : '#'}
-                            target="_blank"
+                            href={`/admin/reportes/pesaje?id=${selectedEventoId}`}
                             rel="noopener noreferrer"
                             className={`w-full block text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${!selectedEventoId ? 'opacity-50 cursor-not-allowed' : ''}`}
                             onClick={(e) => {

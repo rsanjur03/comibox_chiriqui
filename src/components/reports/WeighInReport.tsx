@@ -47,6 +47,14 @@ export default function WeighInReport() {
     }, []);
 
     useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const idFromQuery = params.get('id');
+        if (idFromQuery) {
+            setSelectedEventoId(idFromQuery);
+        }
+    }, []);
+
+    useEffect(() => {
         if (selectedEventoId) {
             cargarReporte(selectedEventoId);
         } else {
