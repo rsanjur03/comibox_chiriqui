@@ -1,7 +1,22 @@
 ---
+
 ---
+
 <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
-  <h3 class="text-xl font-semibold mb-4 text-white">Lista de Boxeadores Registrados</h3>
+  <div class="flex justify-between items-center mb-4">
+    <h3 class="text-xl font-semibold text-white">
+      Lista de Boxeadores Registrados
+    </h3>
+    <div class="flex gap-4 items-center">
+      <label class="text-gray-300 text-sm font-bold">Filtrar por Evento:</label>
+      <select
+        id="filtro-evento"
+        class="shadow border border-gray-600 bg-gray-700 rounded py-2 px-3 text-white text-sm"
+      >
+        <option value="">Todos los boxeadores</option>
+      </select>
+    </div>
+  </div>
   <div id="lista-boxeadores-div" class="overflow-x-auto">
     <p class="text-gray-400">Cargando...</p>
   </div>

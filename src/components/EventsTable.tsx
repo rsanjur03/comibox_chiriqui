@@ -14,6 +14,7 @@ interface Evento {
     fechaPesaje?: string;
     horaPesaje?: string;
     lugarPesaje?: string;
+    flyerUrl?: string;
 }
 
 interface EventsTableProps {
@@ -30,12 +31,12 @@ export default function EventsTable({ refreshTrigger, onEdit }: EventsTableProps
         try {
             const q = query(collection(db, 'eventos'), orderBy('fecha', 'desc'));
             const snapshot = await getDocs(q);
-            
+
             const eventosData: Evento[] = [];
             snapshot.forEach((doc) => {
                 eventosData.push({ id: doc.id, ...doc.data() } as Evento);
             });
-            
+
             setEventos(eventosData);
         } catch (error) {
             console.error('Error al cargar eventos:', error);
@@ -78,6 +79,7 @@ export default function EventsTable({ refreshTrigger, onEdit }: EventsTableProps
                 <table className="w-full text-sm text-left text-gray-300">
                     <thead className="text-xs text-gray-100 uppercase bg-gray-700">
                         <tr>
+                            <th scope="col" className="py-3 px-6">Flyer</th>
                             <th scope="col" className="py-3 px-6">Fecha</th>
                             <th scope="col" className="py-3 px-6">Nombre</th>
                             <th scope="col" className="py-3 px-6">Lugar</th>
@@ -94,10 +96,17 @@ export default function EventsTable({ refreshTrigger, onEdit }: EventsTableProps
                             </tr>
                         ) : (
                             eventos.map((evento) => (
-                                <tr 
-                                    key={evento.id} 
+                                <tr
+                                    key={evento.id}
                                     className="bg-gray-800 border-b border-gray-700 hover:bg-gray-700"
                                 >
+                                    <td className="py-4 px-6">
+                                        {evento.flyerUrl ? (
+                                            <img src={evento.flyerUrl} alt={evento.nombre} className="w-16 h-16 object-cover rounded" />
+                                        ) : (
+                                            <span className="text-gray-500 text-xs">Sin foto</span>
+                                        )}
+                                    </td>
                                     <td className="py-4 px-6 font-medium">{evento.fecha}</td>
                                     <td className="py-4 px-6">{evento.nombre}</td>
                                     <td className="py-4 px-6">{evento.lugar}, {evento.ciudad}</td>

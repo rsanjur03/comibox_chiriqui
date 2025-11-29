@@ -18,14 +18,65 @@
       </div>
 
       <div class="md:col-span-3">
-        <div class="mb-4">
-          <label class="block text-gray-300 text-sm font-bold mb-2" for="nombre">Nombre Completo</label>
-          <input class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white" id="nombre" type="text" placeholder="Ej: Pedro 'La Roca' Durán" required>
-        </div>
-        <div class="mb-4">
-          <label class="block text-gray-300 text-sm font-bold mb-2" for="alias">Alias (Apodo)</label>
-          <input class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white" id="alias" type="text" placeholder="Ej: La Roca">
-        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+
+  <!-- CÉDULA -->
+  <div>
+    <label class="block text-gray-300 text-sm font-bold mb-2" for="cedula">
+      Cédula
+    </label>
+    <input
+      class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+      id="cedula"
+      type="text"
+      placeholder="Ej: 8-123-456"
+      required
+    >
+  </div>
+
+  <!-- NOMBRE LEGAL -->
+  <div>
+    <label class="block text-gray-300 text-sm font-bold mb-2" for="nombreLegal">
+      Nombre Legal Completo
+    </label>
+    <input
+      class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+      id="nombreLegal"
+      type="text"
+      placeholder="Ej: Pedro José Durán Gómez"
+      required
+    >
+  </div>
+
+  <!-- NOMBRE BOXÍSTICO -->
+  <div>
+    <label class="block text-gray-300 text-sm font-bold mb-2" for="nombreBoxistico">
+      Nombre Boxístico (Nombre de Combate)
+    </label>
+    <input
+      class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+      id="nombreBoxistico"
+      type="text"
+      placeholder="Ej: La Roca"
+      required
+    >
+  </div>
+
+</div>
+
+<!-- ALIAS OPCIONAL -->
+<div class="mb-4">
+  <label class="block text-gray-300 text-sm font-bold mb-2" for="alias">
+    Alias / Apodo (Opcional)
+  </label>
+  <input
+    class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+    id="alias"
+    type="text"
+    placeholder="Ej: El Demoledor"
+  >
+</div>
+
 
         <div class="grid grid-cols-3 gap-4 mb-4">
           <div>

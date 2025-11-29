@@ -1,6 +1,9 @@
 ---
 interface Boxer {
   id: string;
+  cedula?: string;
+  nombreLegal?: string;
+  nombreBoxistico?: string;
   nombre: string;
   alias?: string;
   fotoURL?: string;
@@ -18,43 +21,77 @@ interface Boxer {
 }
 const { boxer } = Astro.props as { boxer: Boxer };
 
-const isDebutante = (boxer.victorias ?? 0) === 0 && (boxer.derrotas ?? 0) === 0 && (boxer.empates ?? 0) === 0;
-const vKO = (boxer.victoriasKO ?? 0) > 0 ? `(${boxer.victoriasKO ?? 0})` : '';
-const dKO = (boxer.derrotasKO ?? 0) > 0 ? `(${boxer.derrotasKO ?? 0})` : '';
+const isDebutante =
+  (boxer.victorias ?? 0) === 0 &&
+  (boxer.derrotas ?? 0) === 0 &&
+  (boxer.empates ?? 0) === 0;
+const vKO = (boxer.victoriasKO ?? 0) > 0 ? `(${boxer.victoriasKO ?? 0})` : "";
+const dKO = (boxer.derrotasKO ?? 0) > 0 ? `(${boxer.derrotasKO ?? 0})` : "";
 const recordTexto = `${boxer.victorias ?? 0}${vKO}-${boxer.derrotas ?? 0}${dKO}-${boxer.empates ?? 0}`;
-const recordStyle = isDebutante ? 'text-2xl font-bold text-gray-400' : 'text-3xl font-bold text-blue-400';
-const recordContent = isDebutante ? 'Debutante' : recordTexto;
-const locationTexto = `${boxer.provincia || boxer.paisProcedencia ? (boxer.provincia || '') + (boxer.provincia && boxer.paisProcedencia ? ', ' : '') + (boxer.paisProcedencia || '') : 'N/D'}`;
-
+const recordStyle = isDebutante
+  ? "text-2xl font-bold text-gray-400"
+  : "text-3xl font-bold text-blue-400";
+const recordContent = isDebutante ? "Debutante" : recordTexto;
+const locationTexto = `${boxer.provincia || boxer.paisProcedencia ? (boxer.provincia || "") + (boxer.provincia && boxer.paisProcedencia ? ", " : "") + (boxer.paisProcedencia || "") : "N/D"}`;
 ---
 
 <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col">
-  {boxer.fotoURL ? (
-    <img src={boxer.fotoURL} alt={`Foto de ${boxer.nombre}`} class="w-full h-64 object-cover" />
-  ) : (
-    <div class="w-full h-64 foto-placeholder"></div>
-  )}
+  {
+    boxer.fotoURL ? (
+      <img
+        src={boxer.fotoURL}
+        alt={`Foto de ${boxer.nombreBoxistico || boxer.nombre}`}
+        class="w-full h-64 object-cover"
+      />
+    ) : (
+      <div class="w-full h-64 foto-placeholder" />
+    )
+  }
   <div class="p-6 grow">
-    <h2 class="text-2xl font-bold text-white">{boxer.nombre}</h2>
-    {boxer.alias ? <p class="text-lg text-gray-400 italic mb-1">"{boxer.alias}"</p> : null}
+    <h2 class="text-2xl font-bold text-white">
+      {boxer.nombreBoxistico || boxer.nombre}
+    </h2>
+    {
+      boxer.nombreLegal && (
+        <p class="text-sm text-gray-400 mb-1">{boxer.nombreLegal}</p>
+      )
+    }
+    {
+      boxer.alias && (
+        <p class="text-base text-gray-400 italic mb-1">"{boxer.alias}"</p>
+      )
+    }
 
     <p class={`${recordStyle} my-2`}>{recordContent}</p>
-    <p class="text-sm text-gray-500 mb-4">{isDebutante ? '' : '(V (KO) - D (KO) - E)'}</p>
+    <p class="text-sm text-gray-500 mb-4">
+      {isDebutante ? "" : "(V (KO) - D (KO) - E)"}
+    </p>
 
     <div class="grid grid-cols-2 gap-2 text-sm">
-      <span class="text-gray-400 col-span-2 text-base font-semibold border-t border-gray-700 pt-2">{locationTexto}</span>
+      <span
+        class="text-gray-400 col-span-2 text-base font-semibold border-t border-gray-700 pt-2"
+        >{locationTexto}</span
+      >
 
       <span class="text-gray-500 mt-2">Guardia:</span>
-      <span class="font-medium text-gray-200 mt-2">{boxer.guardia ?? 'N/D'}</span>
+      <span class="font-medium text-gray-200 mt-2"
+        >{boxer.guardia ?? "N/D"}</span
+      >
 
       <span class="text-gray-500">Altura:</span>
-      <span class="font-medium text-gray-200">{boxer.altura ? `${boxer.altura} cm` : 'N/D'}</span>
+      <span class="font-medium text-gray-200"
+        >{boxer.altura ? `${boxer.altura} cm` : "N/D"}</span
+      >
 
       <span class="text-gray-500">Alcance:</span>
-      <span class="font-medium text-gray-200">{boxer.alcance ? `${boxer.alcance} cm` : 'N/D'}</span>
+      <span class="font-medium text-gray-200"
+        >{boxer.alcance ? `${boxer.alcance} cm` : "N/D"}</span
+      >
 
       <span class="text-gray-500">Nacimiento:</span>
-      <span class="font-medium text-gray-200">{boxer.fechaNacimiento ?? 'N/D'}</span>
+      <span class="font-medium text-gray-200"
+        >{boxer.fechaNacimiento ?? "N/D"}</span
+      >
     </div>
   </div>
 </div>

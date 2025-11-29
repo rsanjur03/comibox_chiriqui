@@ -1,17 +1,20 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import BoxersHeader from '../components/BoxersHeader.astro';
-import BoxersGrid from '../components/BoxersGrid.astro';
-import BoxersTable from '../components/BoxersTable.astro';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import BoxersHeader from "../components/BoxersHeader.astro";
+import BoxersGrid from "../components/BoxersGrid.astro";
+import BoxersTable from "../components/BoxersTable.astro";
 
-import { db } from '../lib/firebase.js';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { db } from "../lib/firebase.js";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
 
 type Boxer = {
   id: string;
-  nombre: string;
+  cedula?: string;
+  nombreLegal?: string;
+  nombreBoxistico?: string;
+  nombre: string; // Mantener para compatibilidad con datos antiguos
   alias?: string;
   fotoURL?: string;
   victorias: number;
@@ -28,14 +31,16 @@ type Boxer = {
 };
 
 async function getBoxeadores(): Promise<Boxer[]> {
-  const boxeadoresRef = collection(db, 'boxeadores');
-  const q = query(boxeadoresRef, orderBy('nombre', 'asc'));
+  const boxeadoresRef = collection(db, "boxeadores");
+  // Ordenar por nombreBoxistico, con fallback a nombre para compatibilidad
+  const q = query(boxeadoresRef, orderBy("nombreBoxistico", "asc"));
   const snapshot = await getDocs(q);
-  return snapshot.docs.map(d => ({ id: d.id, ...(d.data() as any) }));
+  return snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
 }
 
 const boxeadores = await getBoxeadores();
 ---
+
 <BaseLayout title="Boxeadores - COMIBOX Chiriquí">
   <main class="grow container mx-auto p-4 md:p-8">
     <BoxersHeader activeView="lista" />
@@ -43,27 +48,48 @@ const boxeadores = await getBoxeadores();
     <BoxersGrid boxeadores={boxeadores} />
 
     <script>
-      const btnVistaLista = document.getElementById('btn-vista-lista');
-      const btnVistaTarjetas = document.getElementById('btn-vista-tarjetas');
-      const gridContainer = document.getElementById('lista-boxeadores-grid');
-      const tablaContainer = document.getElementById('lista-boxeadores-tabla');
+      const btnVistaLista = document.getElementById("btn-vista-lista");
+      const btnVistaTarjetas = document.getElementById("btn-vista-tarjetas");
+      const gridContainer = document.getElementById("lista-boxeadores-grid");
+      const tablaContainer = document.getElementById("lista-boxeadores-tabla");
 
-      if (btnVistaLista && btnVistaTarjetas && gridContainer && tablaContainer) {
-        btnVistaLista.addEventListener('click', () => {
-          tablaContainer.style.display = 'block';
-          gridContainer.style.display = 'none';
-          btnVistaLista.classList.add('bg-blue-600', 'text-white');
-          btnVistaLista.classList.remove('bg-gray-700', 'text-gray-300', 'hover:bg-gray-600');
-          btnVistaTarjetas.classList.add('bg-gray-700', 'text-gray-300', 'hover:bg-gray-600');
-          btnVistaTarjetas.classList.remove('bg-blue-600', 'text-white');
+      if (
+        btnVistaLista &&
+        btnVistaTarjetas &&
+        gridContainer &&
+        tablaContainer
+      ) {
+        btnVistaLista.addEventListener("click", () => {
+          tablaContainer.style.display = "block";
+          gridContainer.style.display = "none";
+          btnVistaLista.classList.add("bg-blue-600", "text-white");
+          btnVistaLista.classList.remove(
+            "bg-gray-700",
+            "text-gray-300",
+            "hover:bg-gray-600",
+          );
+          btnVistaTarjetas.classList.add(
+            "bg-gray-700",
+            "text-gray-300",
+            "hover:bg-gray-600",
+          );
+          btnVistaTarjetas.classList.remove("bg-blue-600", "text-white");
         });
-        btnVistaTarjetas.addEventListener('click', () => {
-          tablaContainer.style.display = 'none';
-          gridContainer.style.display = 'grid';
-          btnVistaTarjetas.classList.add('bg-blue-600', 'text-white');
-          btnVistaTarjetas.classList.remove('bg-gray-700', 'text-gray-300', 'hover:bg-gray-600');
-          btnVistaLista.classList.add('bg-gray-700', 'text-gray-300', 'hover:bg-gray-600');
-          btnVistaLista.classList.remove('bg-blue-600', 'text-white');
+        btnVistaTarjetas.addEventListener("click", () => {
+          tablaContainer.style.display = "none";
+          gridContainer.style.display = "grid";
+          btnVistaTarjetas.classList.add("bg-blue-600", "text-white");
+          btnVistaTarjetas.classList.remove(
+            "bg-gray-700",
+            "text-gray-300",
+            "hover:bg-gray-600",
+          );
+          btnVistaLista.classList.add(
+            "bg-gray-700",
+            "text-gray-300",
+            "hover:bg-gray-600",
+          );
+          btnVistaLista.classList.remove("bg-blue-600", "text-white");
         });
       }
     </script>

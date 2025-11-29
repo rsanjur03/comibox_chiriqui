@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import EventForm from './EventForm';
 import EventsTable from './EventsTable';
-import EventEditModal from './EventEditModal';
 
 interface Evento {
     id: string;
@@ -15,43 +14,38 @@ interface Evento {
     fechaPesaje?: string;
     horaPesaje?: string;
     lugarPesaje?: string;
+    flyerUrl?: string;
 }
 
 export default function EventsManager() {
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [selectedEvento, setSelectedEvento] = useState<Evento | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleEventCreated = () => {
+    const handleEventSubmitted = () => {
         setRefreshTrigger(prev => prev + 1);
-    };
-
-    const handleEventUpdated = () => {
-        setRefreshTrigger(prev => prev + 1);
+        setSelectedEvento(null); // Clear selected event after submission
     };
 
     const handleEdit = (evento: Evento) => {
         setSelectedEvento(evento);
-        setIsModalOpen(true);
+        // Scroll to top to see the form
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
+    const handleCancelEdit = () => {
         setSelectedEvento(null);
     };
 
     return (
         <>
-            <EventForm onEventCreated={handleEventCreated} />
-            <EventsTable 
-                refreshTrigger={refreshTrigger} 
-                onEdit={handleEdit}
+            <EventForm
+                onEventCreated={handleEventSubmitted}
+                initialData={selectedEvento}
+                onCancel={handleCancelEdit}
             />
-            <EventEditModal
-                evento={selectedEvento}
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-                onEventUpdated={handleEventUpdated}
+            <EventsTable
+                refreshTrigger={refreshTrigger}
+                onEdit={handleEdit}
             />
         </>
     );

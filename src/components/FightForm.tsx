@@ -45,6 +45,9 @@ interface Evento {
 
 interface Boxeador {
     id: string;
+    cedula?: string;
+    nombreLegal?: string;
+    nombreBoxistico?: string;
     nombre: string;
     victorias: number;
     derrotas: number;
@@ -59,7 +62,7 @@ async function getNombreOficial(id: string): Promise<string | null> {
     if (oficialesCache.has(id)) {
         return oficialesCache.get(id)!;
     }
-    
+
     try {
         const docRef = doc(db, 'oficiales', id);
         const docSnap = await getDoc(docRef);
@@ -80,7 +83,7 @@ export default function FightForm({ onFightSaved, editingFight, onCancelEdit }: 
     const [eventos, setEventos] = useState<Evento[]>([]);
     const [boxeadores, setBoxeadores] = useState<Boxeador[]>([]);
     const [juezNombres, setJuezNombres] = useState({ juez1: 'Juez 1', juez2: 'Juez 2', juez3: 'Juez 3' });
-    
+
     const [formData, setFormData] = useState<Omit<FightData, 'id'>>({
         eventoId: '',
         eventoNombre: '',
@@ -172,14 +175,17 @@ export default function FightForm({ onFightSaved, editingFight, onCancelEdit }: 
 
     const cargarBoxeadores = async () => {
         try {
-            const q = query(collection(db, 'boxeadores'), orderBy('nombre'));
+            const q = query(collection(db, 'boxeadores'), orderBy('nombreBoxistico', 'asc'));
             const snapshot = await getDocs(q);
             const boxeadoresData: Boxeador[] = [];
             snapshot.forEach((doc) => {
                 const data = doc.data();
                 boxeadoresData.push({
                     id: doc.id,
-                    nombre: data.nombre,
+                    cedula: data.cedula,
+                    nombreLegal: data.nombreLegal,
+                    nombreBoxistico: data.nombreBoxistico,
+                    nombre: data.nombreBoxistico || data.nombre,
                     victorias: data.victorias || 0,
                     derrotas: data.derrotas || 0,
                     empates: data.empates || 0
@@ -202,12 +208,12 @@ export default function FightForm({ onFightSaved, editingFight, onCancelEdit }: 
     const getNombreBoxeador = (boxeadorId: string, tipo: 'A' | 'B'): string => {
         const boxeador = boxeadores.find(b => b.id === boxeadorId);
         if (!boxeador) return tipo === 'A' ? 'Boxeador A (Rojo)' : 'Boxeador B (Azul)';
-        return boxeador.nombre.split(' (')[0];
+        return (boxeador.nombreBoxistico || boxeador.nombre).split(' (')[0];
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
+
         if (!formData.eventoId) {
             alert('Por favor, seleccione un evento.');
             return;
@@ -232,13 +238,13 @@ export default function FightForm({ onFightSaved, editingFight, onCancelEdit }: 
             const boxeadorA = boxeadores.find(b => b.id === formData.boxeadorA_Id);
             const boxeadorB = boxeadores.find(b => b.id === formData.boxeadorB_Id);
 
-            const eventoTexto = eventoSeleccionado 
+            const eventoTexto = eventoSeleccionado
                 ? `${eventoSeleccionado.fecha} - ${eventoSeleccionado.nombre}`
                 : '';
-            const boxeadorATexto = boxeadorA 
+            const boxeadorATexto = boxeadorA
                 ? `${boxeadorA.nombre} (${boxeadorA.victorias}-${boxeadorA.derrotas}-${boxeadorA.empates})`
                 : '';
-            const boxeadorBTexto = boxeadorB 
+            const boxeadorBTexto = boxeadorB
                 ? `${boxeadorB.nombre} (${boxeadorB.victorias}-${boxeadorB.derrotas}-${boxeadorB.empates})`
                 : '';
 
@@ -315,7 +321,7 @@ export default function FightForm({ onFightSaved, editingFight, onCancelEdit }: 
             <h2 className="text-2xl font-semibold mb-4 text-white">
                 {editingFight ? 'Editar Pelea' : 'Registrar Pelea'} de Evento
             </h2>
-            
+
             <form onSubmit={handleSubmit}>
                 {/* Evento */}
                 <div className="mb-4">

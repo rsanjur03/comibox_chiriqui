@@ -1,0 +1,208 @@
+---
+interface LicenseCardBackProps {
+  numeroLicencia: string;
+  anio: number;
+}
+
+const { numeroLicencia, anio } = Astro.props;
+
+// ✅ URL robusta (local + producción)
+const baseUrl =
+  Astro.site?.href ||
+  (import.meta.env.PUBLIC_SITE_URL ?? "http://localhost:4321/");
+
+const urlVerificacion = `${baseUrl}verificar-licencia?codigo=${encodeURIComponent(
+  numeroLicencia
+)}`;
+
+// ✅ QR compatible con html2canvas (SIN CORS)
+const qrURL = `https://quickchart.io/qr?size=220&text=${encodeURIComponent(
+  urlVerificacion
+)}`;
+---
+
+<div class="license-card-back">
+  <!-- FRANJA SUPERIOR -->
+  <div class="back-header">
+    <span>COMISIÓN DE BOXEO PROFESIONAL DE CHIRIQUÍ</span>
+  </div>
+
+  <!-- CUERPO -->
+  <div class="back-body">
+    <!-- IZQUIERDA: QR GRANDE -->
+    <div class="back-left">
+      <div class="back-qr-frame">
+        <img src={qrURL} alt="QR verificación licencia" class="back-qr" />
+      </div>
+      <p class="back-qr-text">
+        Escanee este código para verificar en línea la validez de esta licencia.
+      </p>
+    </div>
+
+    <!-- DERECHA: DATOS Y TEXTO LEGAL -->
+    <div class="back-right">
+      <div class="back-block">
+        <h3>Datos de la licencia</h3>
+        <p><strong>Número:</strong> {numeroLicencia}</p>
+        <p><strong>Año:</strong> {anio}</p>
+        <p><strong>Estado:</strong> VIGENTE si el sistema así lo indica.</p>
+      </div>
+
+      <div class="back-block">
+        <h3>Contacto oficial</h3>
+        <p>
+          Para consultas o verificación adicional:
+        </p>
+        <p>
+          <strong>COMIBOX Chiriquí</strong><br />
+          Correo: <span>info@comiboxchiriqui.com</span><br />
+          Teléfono: <span>+507 6671-4646</span>
+        </p>
+      </div>
+
+      <div class="back-block back-legal">
+        <h3>Uso del documento</h3>
+        <p class="uso-doc">
+          Esta licencia es personal e intransferible. Soportada por la base de datos
+          oficial de COMIBOX Chiriquí. Cualquier alteración, falsificación o uso indebido
+          puede ser sancionado según la normativa vigente.
+        </p>
+      </div>
+
+      
+    </div>
+  </div>
+
+  <!-- PIE -->
+  <div class="back-footer">
+    Válida únicamente para eventos autorizados por COMIBOX Chiriquí.
+  </div>
+</div>
+
+<style>
+  .license-card-back {
+    width: 8.5cm;
+    height: 5.5cm;
+    background: #f9fafb;
+    border: 1px solid #111827;
+    border-radius: 0.25cm;
+    display: flex;
+    flex-direction: column;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    overflow: hidden;
+  }
+
+  .back-header {
+    height: 0.9cm;
+    background: #111827;
+    color: #f9fafb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.28cm;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-align: center;
+    padding: 0 0.2cm;
+  }
+
+.back-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 3.3cm 5cm;
+  padding: 0.22cm 0.25cm 0.18cm;
+  gap: 0.18cm;
+  overflow: hidden;   /* ✅ IMPIDE QUE EMPUJE EL FOOTER */
+}
+
+  .back-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .back-qr-frame {
+    width: 3cm;
+    height: 3cm;
+    background: #ffffff;
+    border-radius: 0.1cm;
+    border: 1px solid #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .back-qr {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .back-qr-text {
+    margin-top: 0.15cm;
+    font-size: 0.18cm;
+    line-height: 1.15;
+    text-align: center;
+    color: #4b5563;
+  }
+
+.back-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12cm;
+  font-size: 0.19cm;
+  max-height: 5cm;  /* ✅ LÍMITE REAL VERTICAL */
+  overflow: hidden;  /* ✅ NADA PUEDE SALIR DE AQUÍ */
+}
+
+.uso-doc {
+  width: 10rem;
+  font-size: 0.15cm;
+}   
+
+  .back-block h3 {
+    font-size: 0.21cm;
+    font-weight: 700;
+    margin-bottom: 0.06cm;
+    color: #111827;
+  }
+
+  .back-block p {
+    margin: 0;
+    color: #374151;
+    line-height: 1.25;
+  }
+
+  .back-block strong {
+    font-weight: 700;
+    color: #111827;
+  }
+
+.back-legal p {
+  font-size: 0.18m;     /* ✅ un pelín más grande */
+  line-height: 1.25;
+overflow: hidden;
+text-overflow: ellipsis;
+display: -webkit-box;
+-webkit-line-clamp: 6; /* ✅ ya no lo corta */
+-webkit-box-orient: vertical;
+}
+
+.back-legal {
+  max-height: 2cm;   /* ✅ límite real del bloque completo */
+  overflow: hidden;    /* ✅ impide que empuje el footer */
+}
+
+
+  .back-footer {
+    height: 0.4cm;
+    background: #e5e7eb;
+    font-size: 0.24cm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #374151;
+  }
+</style>
