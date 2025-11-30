@@ -3,7 +3,7 @@ name: Deploy website on push
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   web-deploy:
@@ -38,4 +38,4 @@ jobs:
           # CAMBIO CLAVE: Usa ./dist/ para el directorio local
           local-dir: ./dist/ 
           # RUTA REMOTA: Dónde irá ese contenido en cPanel
-          # server-dir: /admin.comiboxchiriqui.com/
+           server-dir: /admin.comiboxchiriqui.com/
