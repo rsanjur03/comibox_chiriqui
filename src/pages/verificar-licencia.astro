@@ -1,157 +1,230 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { db } from "../lib/firebase.js";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  doc,
-  getDoc
-} from "firebase/firestore";
-
-let resultado = null;
-let error = null;
-
-if (Astro.request.method === "POST") {
-  const formData = await Astro.request.formData();
-  const criterio = formData.get("criterio")?.toString().trim();
-
-  if (!criterio) {
-    error = "Debe ingresar un número de licencia o una cédula.";
-  } else {
-    try {
-      // =============================
-      // 1. BUSCAR POR NÚMERO LICENCIA
-      // =============================
-      let q = query(
-        collection(db, "licencias"),
-        where("numeroLicencia", "==", criterio)
-      );
-
-      let snap = await getDocs(q);
-
-      // =============================
-      // 2. SI NO ENCUENTRA, BUSCAR POR CÉDULA
-      // =============================
-      if (snap.empty) {
-        const q2 = query(
-          collection(db, "boxeadores"),
-          where("cedula", "==", criterio)
-        );
-
-        const snapBox = await getDocs(q2);
-
-        if (!snapBox.empty) {
-          const boxeadorId = snapBox.docs[0].id;
-
-          const q3 = query(
-            collection(db, "licencias"),
-            where("boxeadorId", "==", boxeadorId)
-          );
-
-          snap = await getDocs(q3);
-        }
-      }
-
-      if (snap.empty) {
-        error = "❌ No se encontró ninguna licencia con esos datos.";
-      } else {
-        const licencia = snap.docs[0].data();
-
-        // =============================
-        // 3. CARGAR DATOS DEL BOXEADOR
-        // =============================
-        const boxerSnap = await getDoc(
-          doc(db, "boxeadores", licencia.boxeadorId)
-        );
-
-        if (boxerSnap.exists()) {
-          const boxer = boxerSnap.data();
-
-          resultado = {
-            nombre: boxer.nombreLegal,
-            cedula: boxer.cedula,
-            pais: boxer.paisProcedencia,
-            foto: boxer.fotoURL,
-            anio: licencia.anio,
-            numeroLicencia: licencia.numeroLicencia,
-            eventoNombre: licencia.eventoNombre,
-          };
-        } else {
-          error = "Licencia encontrada, pero el boxeador no existe.";
-        }
-      }
-
-    } catch (e) {
-      console.error(e);
-      error = "Error al consultar la base de datos.";
-    }
-  }
-}
 ---
 
 <BaseLayout title="Verificador de Licencias - COMIBOX">
-  <main class="container mx-auto p-6 max-w-xl">
+    <main class="container mx-auto p-6 max-w-xl">
+        <h1 class="text-3xl font-bold text-white text-center mb-6">
+            Verificador Público de Licencias
+        </h1>
 
-    <h1 class="text-3xl font-bold text-white text-center mb-6">
-      Verificador Público de Licencias
-    </h1>
-
-    <form method="POST" class="bg-gray-800 p-6 rounded shadow mb-6">
-      <label class="block text-gray-300 mb-2 font-semibold">
-        Número de Licencia o Cédula:
-      </label>
-      <input
-        name="criterio"
-        type="text"
-        placeholder="Ej: CH-2025-0007 o 4-830-1595"
-        class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600 mb-4"
-        required
-      />
-
-      <button
-        type="submit"
-        class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded"
-      >
-        Verificar Licencia
-      </button>
-    </form>
-
-    {error && (
-      <div class="bg-red-700 text-white p-4 rounded mb-4 text-center font-bold">
-        {error}
-      </div>
-    )}
-
-    {resultado && (
-      <div class="bg-white rounded shadow overflow-hidden">
-
-        <div class="bg-green-700 text-white text-center py-3 font-bold">
-          ✅ LICENCIA VÁLIDA
+        <div class="bg-gray-800 p-6 rounded shadow mb-6">
+            <label class="block text-gray-300 mb-2 font-semibold">
+                Número de Licencia o Cédula:
+            </label>
+            <div class="flex gap-2">
+                <input
+                    id="input-criterio"
+                    type="text"
+                    placeholder="Ej: CH-2025-0007 o 4-830-1595"
+                    class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600"
+                />
+                <button
+                    id="btn-verificar"
+                    class="bg-green-600 hover:bg-green-700 text-white font-bold px-6 rounded"
+                >
+                    Verificar
+                </button>
+            </div>
+            <p
+                id="msg-error"
+                class="text-red-400 mt-3 hidden font-bold text-center"
+            >
+            </p>
         </div>
 
-        <div class="p-4 flex gap-4">
-          <div>
-            <img
-              src={resultado.foto}
-              alt={resultado.nombre}
-              class="w-28 h-36 object-cover rounded border"
-            />
-          </div>
+        <!-- RESULTADO (Oculto por defecto) -->
+        <div
+            id="resultado-container"
+            class="bg-white rounded shadow overflow-hidden hidden"
+        >
+            <div class="bg-green-700 text-white text-center py-3 font-bold">
+                ✅ LICENCIA VÁLIDA
+            </div>
 
-          <div class="text-sm">
-            <p><b>Nombre:</b> {resultado.nombre}</p>
-            <p><b>Cédula:</b> {resultado.cedula}</p>
-            <p><b>País:</b> {resultado.pais}</p>
-            <p><b>Año:</b> {resultado.anio}</p>
-            <p><b>N° Licencia:</b> {resultado.numeroLicencia}</p>
-            <p><b>Evento:</b> {resultado.eventoNombre}</p>
-          </div>
+            <div
+                class="p-4 flex gap-4 flex-col sm:flex-row items-center sm:items-start"
+            >
+                <div>
+                    <img
+                        id="res-foto"
+                        src=""
+                        alt="Foto Boxeador"
+                        class="w-28 h-36 object-cover rounded border bg-gray-200"
+                    />
+                </div>
+
+                <div class="text-sm text-gray-800 w-full">
+                    <p class="border-b border-gray-200 py-1">
+                        <b>Nombre:</b>
+                        <span id="res-nombre"></span>
+                    </p>
+                    <p class="border-b border-gray-200 py-1">
+                        <b>Cédula:</b>
+                        <span id="res-cedula"></span>
+                    </p>
+                    <p class="border-b border-gray-200 py-1">
+                        <b>País:</b>
+                        <span id="res-pais"></span>
+                    </p>
+                    <p class="border-b border-gray-200 py-1">
+                        <b>Año:</b>
+                        <span id="res-anio"></span>
+                    </p>
+                    <p class="border-b border-gray-200 py-1">
+                        <b>N° Licencia:</b>
+                        <span id="res-numero"></span>
+                    </p>
+                    <p class="py-1">
+                        <b>Evento:</b>
+                        <span id="res-evento"></span>
+                    </p>
+                </div>
+            </div>
         </div>
+    </main>
 
-      </div>
-    )}
+    <script type="module">
+        import { db } from "/src/lib/firebase.js";
+        import {
+            collection,
+            query,
+            where,
+            getDocs,
+            doc,
+            getDoc,
+        } from "firebase/firestore";
 
-  </main>
+        const btn = document.getElementById("btn-verificar");
+        const input = document.getElementById("input-criterio");
+        const msgError = document.getElementById("msg-error");
+        const resContainer = document.getElementById("resultado-container");
+
+        // Elementos de resultado
+        const resFoto = document.getElementById("res-foto");
+        const resNombre = document.getElementById("res-nombre");
+        const resCedula = document.getElementById("res-cedula");
+        const resPais = document.getElementById("res-pais");
+        const resAnio = document.getElementById("res-anio");
+        const resNumero = document.getElementById("res-numero");
+        const resEvento = document.getElementById("res-evento");
+
+        // Obtener parámetro URL si existe (para QR)
+        const urlParams = new URLSearchParams(window.location.search);
+        const codigoUrl = urlParams.get("codigo");
+        if (codigoUrl) {
+            input.value = codigoUrl;
+            verificarLicencia(codigoUrl);
+        }
+
+        btn.addEventListener("click", () => {
+            const val = input.value.trim();
+            if (val) verificarLicencia(val);
+        });
+
+        async function verificarLicencia(criterio) {
+            // Reset UI
+            msgError.classList.add("hidden");
+            resContainer.classList.add("hidden");
+            btn.disabled = true;
+            btn.innerText = "Buscando...";
+
+            try {
+                let licenciaData = null;
+
+                // 1. Buscar por Número de Licencia
+                const q1 = query(
+                    collection(db, "licencias"),
+                    where("numeroLicencia", "==", criterio),
+                );
+                const snap1 = await getDocs(q1);
+
+                if (!snap1.empty) {
+                    licenciaData = snap1.docs[0].data();
+                } else {
+                    // 2. Buscar por Cédula (Indirecto)
+                    const qBox = query(
+                        collection(db, "boxeadores"),
+                        where("cedula", "==", criterio),
+                    );
+                    const snapBox = await getDocs(qBox);
+
+                    if (!snapBox.empty) {
+                        const boxerId = snapBox.docs[0].id;
+                        // Buscar licencia más reciente de este boxeador
+                        const qLic = query(
+                            collection(db, "licencias"),
+                            where("boxeadorId", "==", boxerId),
+                        );
+                        const snapLic = await getDocs(qLic);
+
+                        if (!snapLic.empty) {
+                            // Tomar la última (podría mejorarse ordenando por año)
+                            licenciaData = snapLic.docs[0].data();
+                        }
+                    }
+                }
+
+                if (licenciaData) {
+                    // 3. Obtener datos del boxeador
+                    const boxerRef = doc(
+                        db,
+                        "boxeadores",
+                        licenciaData.boxeadorId,
+                    );
+                    const boxerSnap = await getDoc(boxerRef);
+
+                    if (boxerSnap.exists()) {
+                        const boxer = boxerSnap.data();
+
+                        // Mostrar resultados
+                        resFoto.src = boxer.fotoURL || "/img/placeholder.png";
+                        resNombre.textContent =
+                            boxer.nombreLegal || boxer.nombre;
+                        resCedula.textContent = boxer.cedula;
+                        resPais.textContent = boxer.paisProcedencia;
+                        resAnio.textContent = licenciaData.anio;
+                        resNumero.textContent = licenciaData.numeroLicencia;
+
+                        // Buscar nombre del evento si tenemos ID
+                        if (licenciaData.eventoId) {
+                            try {
+                                const evSnap = await getDoc(
+                                    doc(db, "eventos", licenciaData.eventoId),
+                                );
+                                resEvento.textContent = evSnap.exists()
+                                    ? evSnap.data().nombre
+                                    : "Evento no encontrado";
+                            } catch (e) {
+                                resEvento.textContent = "--";
+                            }
+                        } else {
+                            resEvento.textContent = "N/A";
+                        }
+
+                        resContainer.classList.remove("hidden");
+                    } else {
+                        showError(
+                            "Licencia existe pero el boxeador no fue encontrado.",
+                        );
+                    }
+                } else {
+                    showError(
+                        "❌ No se encontró ninguna licencia válida con esos datos.",
+                    );
+                }
+            } catch (error) {
+                console.error(error);
+                showError("Error de conexión al verificar.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Verificar";
+            }
+        }
+
+        function showError(msg) {
+            msgError.textContent = msg;
+            msgError.classList.remove("hidden");
+        }
+    </script>
 </BaseLayout>

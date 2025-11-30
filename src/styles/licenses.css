@@ -1,0 +1,300 @@
+/* ===== TARJETA BASE ===== */
+.license-card {
+  width: 8.5cm;
+  height: 5.5cm;
+  background: #fff;
+  border: 2px solid #000;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ===== HEADER ===== */
+.license-header {
+  height: 1cm;
+  display: grid;
+  grid-template-columns: 3cm 5.5cm;
+}
+
+.license-header-boxing {
+  background: #6b3a12;
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.45cm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.18cm;
+}
+
+.license-header-sub {
+  background: #000;
+  color: #fff;
+  font-size: 0.34cm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== BODY ===== */
+.license-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 2.2cm 2.4cm 3.9cm;
+  padding: 0.1cm;
+  gap: 0;
+}
+
+/* ===== IZQUIERDA ===== */
+.license-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.license-logo {
+  width: 100%;
+  height: 2.1cm;
+  object-fit: contain;
+}
+
+.license-gloves {
+  width: 1.2cm;
+}
+
+.license-num {
+  font-size: 0.27cm;
+  font-weight: 900;
+  color: #000;
+  text-align: center;
+}
+
+/* ===== CENTRO ===== */
+.license-center {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.license-photo-frame {
+  width: 2.2cm;
+  height: 2.7cm;
+  border: 2px solid #000;
+  overflow: hidden;
+}
+
+.license-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.license-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  font-size: 0.3cm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+}
+
+/* ===== DERECHA ===== */
+.license-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-left: 0.05cm;
+  height: 100%;
+}
+
+.license-data-table {
+  width: 70%;
+  height: auto;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.22cm;
+  color: #000;
+}
+
+.license-data-table th {
+  background: #f0f0f0;
+  font-weight: bold;
+  width: 32%;
+  white-space: nowrap;
+}
+
+.license-data-table td {
+  width: 68%;
+  color: #000;
+  background: #fff;
+  padding: 0.06cm;
+  line-height: 1.05;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.license-data-table th,
+.license-data-table td {
+  border: 1px solid #000;
+  vertical-align: middle;
+  text-align: left;
+}
+
+.license-data-table tr:first-child td {
+  font-size: 0.21cm;
+  font-weight: 600;
+  line-height: 1.05;
+}
+
+.license-signature {
+  height: 1.2cm;
+  width: 70%;
+  object-fit: contain;
+  margin-top: 0.05cm;
+}
+
+/* ===== FOOTER ===== */
+.license-footer {
+  height: 0.55cm;
+  background: #000;
+  color: #fff;
+  font-size: 0.28cm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================
+   REVERSO (BACK)
+   ========================== */
+.license-card-back {
+  width: 8.5cm;
+  height: 5.5cm;
+  background: #f9fafb;
+  border: 1px solid #111827;
+  border-radius: 0.25cm;
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.back-header {
+  height: 0.9cm;
+  background: #111827;
+  color: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.28cm;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: center;
+  padding: 0 0.2cm;
+}
+
+.back-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 3.3cm 5cm;
+  padding: 0.22cm 0.25cm 0.18cm;
+  gap: 0.18cm;
+  overflow: hidden;
+}
+
+.back-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.back-qr-frame {
+  width: 3cm;
+  height: 3cm;
+  background: #ffffff;
+  border-radius: 0.1cm;
+  border: 1px solid #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.back-qr {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.back-qr-text {
+  margin-top: 0.15cm;
+  font-size: 0.18cm;
+  line-height: 1.15;
+  text-align: center;
+  color: #4b5563;
+}
+
+.back-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12cm;
+  font-size: 0.19cm;
+  max-height: 5cm;
+  overflow: hidden;
+}
+
+.uso-doc {
+  width: 10rem;
+  font-size: 0.15cm;
+}
+
+.back-block h3 {
+  font-size: 0.21cm;
+  font-weight: 700;
+  margin-bottom: 0.06cm;
+  color: #111827;
+}
+
+.back-block p {
+  margin: 0;
+  color: #374151;
+  line-height: 1.25;
+}
+
+.back-block strong {
+  font-weight: 700;
+  color: #111827;
+}
+
+.back-legal p {
+  font-size: 0.18cm;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+}
+
+.back-legal {
+  max-height: 2cm;
+  overflow: hidden;
+}
+
+.back-footer {
+  height: 0.4cm;
+  background: #e5e7eb;
+  font-size: 0.24cm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #374151;
+}

@@ -1,0 +1,43 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { LicenseGenerator } from "../../components/LicenseGenerator";
+---
+
+<BaseLayout title="Generar Licencias">
+    <main class="container mx-auto p-6">
+        <div id="generator-root">
+            <p class="text-white">Inicializando generador...</p>
+        </div>
+    </main>
+
+    <script>
+        // Obtener ID del evento de la URL
+        const params = new URLSearchParams(window.location.search);
+        const eventoId = params.get("evento");
+
+        if (!eventoId) {
+            document.getElementById("generator-root").innerHTML =
+                '<div class="bg-red-600 text-white p-4 rounded">Error: No se especificó un evento.</div>';
+        }
+    </script>
+
+    <!-- Montar componente React -->
+    <script>
+        import React from "react";
+        import { createRoot } from "react-dom/client";
+        import { LicenseGenerator } from "../../components/LicenseGenerator";
+
+        const params = new URLSearchParams(window.location.search);
+        const eventoId = params.get("evento");
+
+        if (eventoId) {
+            const root = createRoot(document.getElementById("generator-root"));
+            root.render(
+                React.createElement(LicenseGenerator, {
+                    eventoId,
+                    client: "only",
+                }),
+            );
+        }
+    </script>
+</BaseLayout>

@@ -76,7 +76,7 @@ const eventos = eventosSnap.docs.map((d) => ({
             <!-- BOTÓN GENERAR CARNETS -->
             <div class="mt-4">
               <a
-                href={`/licencias/${evento.id}`}
+                href={`/admin/generar-licencias?evento=${evento.id}`}
                 class="block text-center bg-yellow-600 hover:bg-yellow-700 text-black font-bold py-2 px-4 rounded transition"
               >
                 🪪 Generar Carnets de Este Evento
