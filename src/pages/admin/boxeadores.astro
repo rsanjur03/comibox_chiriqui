@@ -1,9 +1,9 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
-import AdminBoxersForm from '../../components/AdminBoxersForm.astro';
-import AdminBoxersList from '../../components/AdminBoxersList.astro';
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import AdminBoxersForm from "../../components/AdminBoxersForm.astro";
+import AdminBoxersList from "../../components/AdminBoxersList.astro";
 ---
 
 <BaseLayout title="Admin: Boxeadores - COMIBOX">
@@ -17,6 +17,8 @@ import AdminBoxersList from '../../components/AdminBoxersList.astro';
       <AdminBoxersList />
     </div>
 
-    <script type="module" src="/src/scripts/admin-boxeadores.js"></script>
+    <script>
+      import "../../scripts/admin-boxeadores.js";
+    </script>
   </main>
 </BaseLayout>

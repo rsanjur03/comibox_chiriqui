@@ -40,8 +40,7 @@ import logo from "../assets/comiboxch_logo.jpg";
       <a
         href="/"
         class={linkCls("/")}
-        aria-current={isActive("/") ? "page" : undefined}
-        >Inicio</a
+        aria-current={isActive("/") ? "page" : undefined}>Inicio</a
       >
 
       <a
@@ -54,8 +53,7 @@ import logo from "../assets/comiboxch_logo.jpg";
       <a
         href="/eventos"
         class={linkCls("/eventos")}
-        aria-current={isActive("/eventos") ? "page" : undefined}
-        >Eventos</a
+        aria-current={isActive("/eventos") ? "page" : undefined}>Eventos</a
       >
 
       <!-- ✅ NUEVO: VERIFICADOR PÚBLICO -->
@@ -73,15 +71,13 @@ import logo from "../assets/comiboxch_logo.jpg";
         class={isActive("/admin")
           ? "text-red-400 font-semibold"
           : "text-gray-400 hover:text-red-400 text-sm"}
-        aria-current={isActive("/admin") ? "page" : undefined}
-        >Admin</a
+        aria-current={isActive("/admin") ? "page" : undefined}>Admin</a
       >
 
       <button
         id="btn-logout"
         class="hidden text-gray-300 hover:text-red-400 text-sm"
-        type="button"
-        >Cerrar sesión</button
+        type="button">Cerrar sesión</button
       >
     </div>
   </nav>
@@ -208,7 +204,9 @@ import logo from "../assets/comiboxch_logo.jpg";
   </div>
 </header>
 
-<script type="module" src="/src/scripts/header-auth.js"></script>
+<script>
+  import "../scripts/header-auth.js";
+</script>
 
 <style>
   /* Asegurar que el dropdown sea visible y no se cierre al mover el mouse */
