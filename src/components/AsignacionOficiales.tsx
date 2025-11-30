@@ -120,10 +120,20 @@ export default function AsignacionOficiales() {
   // Funciones auxiliares
   const filtrarOficiales = (tipo: string): Oficial[] => {
     return oficiales.filter((o) => {
-      if (Array.isArray(o.tipo)) {
-        return o.tipo.some((t: string) => t.includes(tipo));
-      }
-      return o.tipo && o.tipo.includes(tipo);
+      const tipos = Array.isArray(o.tipo) ? o.tipo : [o.tipo];
+
+      // Normalizar para comparación (sin acentos, minúsculas)
+      const normalize = (str: string) => str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const tipoBuscado = normalize(tipo);
+
+      return tipos.some(t => {
+        if (!t) return false;
+        const tNorm = normalize(t);
+        // Casos específicos
+        if (tipo === 'Árbitro') return tNorm.includes('arbitro');
+        if (tipo === 'Médico') return tNorm.includes('medico');
+        return tNorm.includes(tipoBuscado);
+      });
     });
   };
 
@@ -204,7 +214,7 @@ export default function AsignacionOficiales() {
           {eventos.map((evento) => (
             <option key={evento.id} value={evento.id}>
               {evento.nombre} -{' '}
-              {new Date(evento.fecha.seconds * 1000).toLocaleDateString()}
+              {evento.fecha ? new Date(evento.fecha.seconds * 1000).toLocaleDateString() : 'Fecha no válida'}
             </option>
           ))}
         </select>
@@ -212,8 +222,8 @@ export default function AsignacionOficiales() {
 
       {eventoSeleccionado && (
         <div className="space-y-6">
-          <AsignacionComisionado oficiales={oficiales} />
-          <AsignacionMedico oficiales={oficiales} />
+          <AsignacionComisionado oficiales={oficiales} eventoId={eventoSeleccionado} />
+          <AsignacionMedico oficiales={oficiales} eventoId={eventoSeleccionado} />
 
           <hr className="my-6 border-gray-700" />
 

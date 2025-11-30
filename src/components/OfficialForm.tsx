@@ -30,7 +30,7 @@ export default function OfficialForm({ onOfficialSaved, editingOfficial, onCance
     const [loading, setLoading] = useState(false);
     const [previewUrl, setPreviewUrl] = useState(PLACEHOLDER_FOTO);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    
+
     const [formData, setFormData] = useState<Omit<OfficialData, 'id'>>({
         nombre: '',
         tipo: '',
@@ -77,7 +77,7 @@ export default function OfficialForm({ onOfficialSaved, editingOfficial, onCance
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
+
         if (!formData.nombre || !formData.tipo) {
             alert('Nombre y Tipo son obligatorios.');
             return;
@@ -148,23 +148,23 @@ export default function OfficialForm({ onOfficialSaved, editingOfficial, onCance
             <h2 className="text-2xl font-semibold mb-4 text-white">
                 {editingOfficial ? 'Editar Oficial' : 'Registrar Oficial'} (Juez/Árbitro)
             </h2>
-            
+
             <form onSubmit={handleSubmit}>
                 {/* Foto */}
                 <div className="mb-4 text-center">
-                    <img 
-                        src={previewUrl} 
-                        alt="Vista previa de la foto" 
+                    <img
+                        src={previewUrl}
+                        alt="Vista previa de la foto"
                         className="w-32 h-32 rounded-full mx-auto mb-2 object-cover"
                     />
                     <label htmlFor="foto-oficial" className="text-blue-400 hover:text-blue-300 cursor-pointer">
                         Seleccionar Foto
                     </label>
-                    <input 
+                    <input
                         ref={fileInputRef}
-                        className="hidden" 
-                        id="foto-oficial" 
-                        type="file" 
+                        className="hidden"
+                        id="foto-oficial"
+                        type="file"
                         accept="image/*"
                         onChange={handleFileChange}
                     />
@@ -176,22 +176,22 @@ export default function OfficialForm({ onOfficialSaved, editingOfficial, onCance
                         <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="nombre-oficial">
                             Nombre Completo
                         </label>
-                        <input 
-                            className="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white" 
-                            id="nombre-oficial" 
+                        <input
+                            className="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+                            id="nombre-oficial"
                             type="text"
                             value={formData.nombre}
                             onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                            required 
+                            required
                         />
                     </div>
                     <div>
                         <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="cedula-oficial">
                             Cédula
                         </label>
-                        <input 
-                            className="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white" 
-                            id="cedula-oficial" 
+                        <input
+                            className="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+                            id="cedula-oficial"
                             type="text"
                             value={formData.cedula}
                             onChange={(e) => setFormData({ ...formData, cedula: e.target.value })}
@@ -201,9 +201,9 @@ export default function OfficialForm({ onOfficialSaved, editingOfficial, onCance
                         <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="celular-oficial">
                             Celular
                         </label>
-                        <input 
-                            className="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white" 
-                            id="celular-oficial" 
+                        <input
+                            className="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+                            id="celular-oficial"
                             type="tel"
                             value={formData.celular}
                             onChange={(e) => setFormData({ ...formData, celular: e.target.value })}
@@ -217,14 +217,16 @@ export default function OfficialForm({ onOfficialSaved, editingOfficial, onCance
                         <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="tipo-oficial">
                             Tipo / Rol
                         </label>
-                        <select 
-                            id="tipo-oficial" 
+                        <select
+                            id="tipo-oficial"
                             className="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
                             value={formData.tipo}
                             onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
                             required
                         >
                             <option value="">-- Seleccione Rol --</option>
+                            <option value="Comisionado">Comisionado</option>
+                            <option value="Médico">Médico</option>
                             <option value="Juez">Juez (Solamente)</option>
                             <option value="Arbitro">Árbitro (Solamente)</option>
                             <option value="Tiempo">Juez de Tiempo (Solamente)</option>
@@ -238,9 +240,9 @@ export default function OfficialForm({ onOfficialSaved, editingOfficial, onCance
                         <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="fecha-nacimiento">
                             Fecha de Nacimiento
                         </label>
-                        <input 
-                            className="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white" 
-                            id="fecha-nacimiento" 
+                        <input
+                            className="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+                            id="fecha-nacimiento"
                             type="date"
                             value={formData.fechaNacimiento}
                             onChange={(e) => setFormData({ ...formData, fechaNacimiento: e.target.value })}
@@ -250,8 +252,8 @@ export default function OfficialForm({ onOfficialSaved, editingOfficial, onCance
                         <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="sexo-oficial">
                             Sexo
                         </label>
-                        <select 
-                            id="sexo-oficial" 
+                        <select
+                            id="sexo-oficial"
                             className="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
                             value={formData.sexo}
                             onChange={(e) => setFormData({ ...formData, sexo: e.target.value })}
@@ -264,10 +266,10 @@ export default function OfficialForm({ onOfficialSaved, editingOfficial, onCance
                         <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="tipo-sangre">
                             Tipo de Sangre
                         </label>
-                        <input 
-                            className="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white" 
-                            id="tipo-sangre" 
-                            type="text" 
+                        <input
+                            className="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+                            id="tipo-sangre"
+                            type="text"
                             placeholder="Ej: A+"
                             value={formData.tipoSangre}
                             onChange={(e) => setFormData({ ...formData, tipoSangre: e.target.value })}
@@ -281,9 +283,9 @@ export default function OfficialForm({ onOfficialSaved, editingOfficial, onCance
                         <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="direccion-oficial">
                             Dirección
                         </label>
-                        <input 
-                            className="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white" 
-                            id="direccion-oficial" 
+                        <input
+                            className="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+                            id="direccion-oficial"
                             type="text"
                             value={formData.direccion}
                             onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
@@ -293,10 +295,10 @@ export default function OfficialForm({ onOfficialSaved, editingOfficial, onCance
                         <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="inicio-oficial">
                             Año de Inicio
                         </label>
-                        <input 
-                            className="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white" 
-                            id="inicio-oficial" 
-                            type="number" 
+                        <input
+                            className="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+                            id="inicio-oficial"
+                            type="number"
                             placeholder="Ej: 2008"
                             value={formData.inicioEn}
                             onChange={(e) => setFormData({ ...formData, inicioEn: e.target.value })}
@@ -304,9 +306,9 @@ export default function OfficialForm({ onOfficialSaved, editingOfficial, onCance
                     </div>
                     <div className="flex items-end pb-2">
                         <label className="flex items-center text-gray-300">
-                            <input 
-                                className="form-checkbox h-5 w-5 bg-gray-700 border-gray-600 text-blue-600" 
-                                type="checkbox" 
+                            <input
+                                className="form-checkbox h-5 w-5 bg-gray-700 border-gray-600 text-blue-600"
+                                type="checkbox"
                                 id="carnet-oficial"
                                 checked={formData.carnet}
                                 onChange={(e) => setFormData({ ...formData, carnet: e.target.checked })}
@@ -315,9 +317,9 @@ export default function OfficialForm({ onOfficialSaved, editingOfficial, onCance
                         </label>
                     </div>
                 </div>
-                
+
                 <div className="flex gap-2">
-                    <button 
+                    <button
                         type="submit"
                         className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
                         disabled={loading}
@@ -325,7 +327,7 @@ export default function OfficialForm({ onOfficialSaved, editingOfficial, onCance
                         {loading ? 'Guardando...' : editingOfficial ? 'Actualizar Cambios' : 'Guardar Oficial'}
                     </button>
                     {editingOfficial && (
-                        <button 
+                        <button
                             type="button"
                             onClick={handleCancel}
                             className="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded"
