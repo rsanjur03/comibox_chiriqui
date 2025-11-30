@@ -168,6 +168,23 @@ async function cargarBoxeadorParaEdicion(id) {
     const cedulaInput = qs('#cedula');
     if (cedulaInput) cedulaInput.value = b.cedula || '';
 
+    // Cédula Archivo
+    const cedulaUrlInput = qs('#cedula-url');
+    const cedulaPreviewContainer = qs('#cedula-preview-container');
+    const cedulaLink = qs('#cedula-link');
+
+    if (cedulaUrlInput) cedulaUrlInput.value = b.cedulaUrl || '';
+    if (b.cedulaUrl && cedulaPreviewContainer && cedulaLink) {
+      cedulaLink.href = b.cedulaUrl;
+      cedulaPreviewContainer.classList.remove('hidden');
+    } else if (cedulaPreviewContainer) {
+      cedulaPreviewContainer.classList.add('hidden');
+    }
+
+    // Peso
+    const pesoInput = qs('#peso');
+    if (pesoInput) pesoInput.value = b.peso || '';
+
     const nombreLegalInput = qs('#nombreLegal');
     if (nombreLegalInput) nombreLegalInput.value = b.nombreLegal || '';
 
@@ -255,6 +272,10 @@ function cancelarEdicionBoxeador() {
 
   formBoxeador.reset();
   qs('#cedula').value = '';
+  qs('#cedula-url').value = '';
+  qs('#cedula-file').value = '';
+  qs('#cedula-preview-container').classList.add('hidden');
+  qs('#peso').value = '';
   qs('#nombreLegal').value = '';
   qs('#nombreBoxistico').value = '';
 
@@ -278,11 +299,18 @@ async function handleSubmit(e) {
   const inputEditIdBoxeador = qs('#boxeador-edit-id');
   const inputFotoUrl = qs('#boxeador-foto-url');
   const inputFotoFile = qs('#boxeador-foto-file');
+  const inputCedulaUrl = qs('#cedula-url');
+  const inputCedulaFile = qs('#cedula-file');
   const btnGuardarBoxeador = qs('#btn-guardar-boxeador');
+
   let fotoURL = inputFotoUrl.value;
+  let cedulaUrl = inputCedulaUrl.value;
+
   btnGuardarBoxeador.innerText = 'Guardando...';
   btnGuardarBoxeador.disabled = true;
+
   try {
+    // 1. Subir Foto
     const file = inputFotoFile.files[0];
     if (file) {
       btnGuardarBoxeador.innerText = 'Subiendo foto...';
@@ -290,11 +318,23 @@ async function handleSubmit(e) {
       await uploadBytes(storageRef, file);
       fotoURL = await getDownloadURL(storageRef);
     }
+
+    // 2. Subir Cédula
+    const cedulaFile = inputCedulaFile.files[0];
+    if (cedulaFile) {
+      btnGuardarBoxeador.innerText = 'Subiendo documento...';
+      const storageRef = ref(storage, `boxer-ids/${Date.now()}-${cedulaFile.name}`);
+      await uploadBytes(storageRef, cedulaFile);
+      cedulaUrl = await getDownloadURL(storageRef);
+    }
+
     btnGuardarBoxeador.innerText = 'Guardando datos...';
     const data = {
 
       // ✅ NUEVOS CAMPOS PROFESIONALES
       cedula: qs('#cedula').value.trim(),
+      cedulaUrl,
+      peso: qs('#peso').value.trim(),
       nombreLegal: qs('#nombreLegal').value.trim(),
       nombreBoxistico: qs('#nombreBoxistico').value.trim(),
 

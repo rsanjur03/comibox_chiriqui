@@ -1,155 +1,334 @@
 ---
+
 ---
+
 <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
-  <h2 class="text-2xl font-semibold mb-4 text-white">Registrar / Editar Boxeador</h2>
+  <h2 class="text-2xl font-semibold mb-4 text-white">
+    Registrar / Editar Boxeador
+  </h2>
   <form id="form-boxeador">
-    <input type="hidden" id="boxeador-edit-id">
-    <input type="hidden" id="boxeador-foto-url">
+    <input type="hidden" id="boxeador-edit-id" />
+    <input type="hidden" id="boxeador-foto-url" />
 
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
       <div class="md:col-span-1">
-        <label class="block text-gray-300 text-sm font-bold mb-2">Foto del Boxeador</label>
+        <label class="block text-gray-300 text-sm font-bold mb-2"
+          >Foto del Boxeador</label
+        >
         <label for="boxeador-foto-file" class="avatar-placeholder">
-          <img id="boxeador-foto-preview" src="" alt="Vista previa" style="display: none;">
+          <img
+            id="boxeador-foto-preview"
+            src=""
+            alt="Vista previa"
+            style="display: none;"
+          />
           <span id="boxeador-foto-icon">&#128100;</span>
         </label>
-        <input type="file" id="boxeador-foto-file" class="hidden" accept="image/*">
-        <p class="text-sm text-gray-400 mt-2">Haz clic en el círculo para subir una foto.</p>
+        <input
+          type="file"
+          id="boxeador-foto-file"
+          class="hidden"
+          accept="image/*"
+        />
+        <p class="text-sm text-gray-400 mt-2">
+          Haz clic en el círculo para subir una foto.
+        </p>
       </div>
 
       <div class="md:col-span-3">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <!-- CÉDULA -->
+          <div>
+            <label
+              class="block text-gray-300 text-sm font-bold mb-2"
+              for="cedula"
+            >
+              Cédula (Número)
+            </label>
+            <input
+              class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white mb-2"
+              id="cedula"
+              type="text"
+              placeholder="Ej: 8-123-456"
+              required
+            />
 
-  <!-- CÉDULA -->
-  <div>
-    <label class="block text-gray-300 text-sm font-bold mb-2" for="cedula">
-      Cédula
-    </label>
-    <input
-      class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
-      id="cedula"
-      type="text"
-      placeholder="Ej: 8-123-456"
-      required
-    >
-  </div>
+            <label
+              class="block text-gray-300 text-sm font-bold mb-1"
+              for="cedula-file"
+            >
+              Documento de Identidad (Foto/PDF)
+            </label>
+            <input
+              type="file"
+              id="cedula-file"
+              class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer"
+              accept="image/*,application/pdf"
+            />
+            <input type="hidden" id="cedula-url" />
+            <div id="cedula-preview-container" class="mt-2 hidden">
+              <a
+                id="cedula-link"
+                href="#"
+                target="_blank"
+                class="text-blue-400 hover:text-blue-300 text-sm underline flex items-center"
+              >
+                <span class="mr-1">📄</span> Ver Documento Actual
+              </a>
+            </div>
+          </div>
 
-  <!-- NOMBRE LEGAL -->
-  <div>
-    <label class="block text-gray-300 text-sm font-bold mb-2" for="nombreLegal">
-      Nombre Legal Completo
-    </label>
-    <input
-      class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
-      id="nombreLegal"
-      type="text"
-      placeholder="Ej: Pedro José Durán Gómez"
-      required
-    >
-  </div>
+          <!-- PESO -->
+          <div>
+            <label
+              class="block text-gray-300 text-sm font-bold mb-2"
+              for="peso"
+            >
+              Peso (lbs)
+            </label>
+            <input
+              class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+              id="peso"
+              type="number"
+              step="0.1"
+              placeholder="Ej: 147.5"
+            />
+          </div>
 
-  <!-- NOMBRE BOXÍSTICO -->
-  <div>
-    <label class="block text-gray-300 text-sm font-bold mb-2" for="nombreBoxistico">
-      Nombre Boxístico (Nombre de Combate)
-    </label>
-    <input
-      class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
-      id="nombreBoxistico"
-      type="text"
-      placeholder="Ej: La Roca"
-      required
-    >
-  </div>
+          <!-- NOMBRE LEGAL -->
+          <div>
+            <label
+              class="block text-gray-300 text-sm font-bold mb-2"
+              for="nombreLegal"
+            >
+              Nombre Legal Completo
+            </label>
+            <input
+              class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+              id="nombreLegal"
+              type="text"
+              placeholder="Ej: Pedro José Durán Gómez"
+              required
+            />
+          </div>
 
-</div>
+          <!-- NOMBRE BOXÍSTICO -->
+          <div>
+            <label
+              class="block text-gray-300 text-sm font-bold mb-2"
+              for="nombreBoxistico"
+            >
+              Nombre Boxístico (Nombre de Combate)
+            </label>
+            <input
+              class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+              id="nombreBoxistico"
+              type="text"
+              placeholder="Ej: La Roca"
+              required
+            />
+          </div>
+        </div>
 
-<!-- ALIAS OPCIONAL -->
-<div class="mb-4">
-  <label class="block text-gray-300 text-sm font-bold mb-2" for="alias">
-    Alias / Apodo (Opcional)
-  </label>
-  <input
-    class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
-    id="alias"
-    type="text"
-    placeholder="Ej: El Demoledor"
-  >
-</div>
-
+        <!-- ALIAS OPCIONAL -->
+        <div class="mb-4">
+          <label class="block text-gray-300 text-sm font-bold mb-2" for="alias">
+            Alias / Apodo (Opcional)
+          </label>
+          <input
+            class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+            id="alias"
+            type="text"
+            placeholder="Ej: El Demoledor"
+          />
+        </div>
 
         <div class="grid grid-cols-3 gap-4 mb-4">
           <div>
-            <label class="block text-gray-300 text-sm font-bold mb-2" for="fechaNacimiento">Fecha de Nacimiento</label>
-            <input class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white" id="fechaNacimiento" type="date">
+            <label
+              class="block text-gray-300 text-sm font-bold mb-2"
+              for="fechaNacimiento">Fecha de Nacimiento</label
+            >
+            <input
+              class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+              id="fechaNacimiento"
+              type="date"
+            />
           </div>
           <div>
-            <label class="block text-gray-300 text-sm font-bold mb-2" for="paisProcedencia">País</label>
-            <input class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white" id="paisProcedencia" type="text" placeholder="Ej: Panamá">
+            <label
+              class="block text-gray-300 text-sm font-bold mb-2"
+              for="paisProcedencia">País</label
+            >
+            <input
+              class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+              id="paisProcedencia"
+              type="text"
+              placeholder="Ej: Panamá"
+            />
           </div>
           <div>
-            <label class="block text-gray-300 text-sm font-bold mb-2" for="provincia">Provincia</label>
-            <input class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white" id="provincia" type="text" placeholder="Ej: Chiriquí">
+            <label
+              class="block text-gray-300 text-sm font-bold mb-2"
+              for="provincia">Provincia</label
+            >
+            <input
+              class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+              id="provincia"
+              type="text"
+              placeholder="Ej: Chiriquí"
+            />
           </div>
         </div>
 
         <div class="grid grid-cols-3 gap-4 mb-4">
           <div>
-            <label class="block text-gray-300 text-sm font-bold mb-2" for="guardia">Guardia (Stance)</label>
-            <select id="guardia" class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white">
+            <label
+              class="block text-gray-300 text-sm font-bold mb-2"
+              for="guardia">Guardia (Stance)</label
+            >
+            <select
+              id="guardia"
+              class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+            >
               <option value="Ortodoxo">Ortodoxo</option>
               <option value="Zurdo">Zurdo</option>
             </select>
           </div>
           <div>
-            <label class="block text-gray-300 text-sm font-bold mb-2" for="altura">Altura (cm)</label>
-            <input class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white" id="altura" type="number" placeholder="Ej: 175">
+            <label
+              class="block text-gray-300 text-sm font-bold mb-2"
+              for="altura">Altura (cm)</label
+            >
+            <input
+              class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+              id="altura"
+              type="number"
+              placeholder="Ej: 175"
+            />
           </div>
           <div>
-            <label class="block text-gray-300 text-sm font-bold mb-2" for="alcance">Alcance (cm)</label>
-            <input class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white" id="alcance" type="number" placeholder="Ej: 180">
+            <label
+              class="block text-gray-300 text-sm font-bold mb-2"
+              for="alcance">Alcance (cm)</label
+            >
+            <input
+              class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+              id="alcance"
+              type="number"
+              placeholder="Ej: 180"
+            />
           </div>
         </div>
 
         <div class="grid grid-cols-3 gap-4">
-          <label class="block text-gray-300 text-sm font-bold col-span-3 mb-2">Récord Profesional (V-D-E)</label>
+          <label class="block text-gray-300 text-sm font-bold col-span-3 mb-2"
+            >Récord Profesional (V-D-E)</label
+          >
 
           <div>
-            <label class="block text-gray-400 text-sm" for="victorias">Total Victorias</label>
-            <input class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white mb-2" id="victorias" type="number" value="0" required>
+            <label class="block text-gray-400 text-sm" for="victorias"
+              >Total Victorias</label
+            >
+            <input
+              class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white mb-2"
+              id="victorias"
+              type="number"
+              value="0"
+              required
+            />
 
-            <label class="block text-gray-400 text-sm" for="victoriasKO">Por KO</label>
-            <input class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white" id="victoriasKO" type="number" value="0" required>
+            <label class="block text-gray-400 text-sm" for="victoriasKO"
+              >Por KO</label
+            >
+            <input
+              class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+              id="victoriasKO"
+              type="number"
+              value="0"
+              required
+            />
           </div>
 
           <div>
-            <label class="block text-gray-400 text-sm" for="derrotas">Total Derrotas</label>
-            <input class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white mb-2" id="derrotas" type="number" value="0" required>
+            <label class="block text-gray-400 text-sm" for="derrotas"
+              >Total Derrotas</label
+            >
+            <input
+              class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white mb-2"
+              id="derrotas"
+              type="number"
+              value="0"
+              required
+            />
 
-            <label class="block text-gray-400 text-sm" for="derrotasKO">KO en contra</label>
-            <input class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white" id="derrotasKO" type="number" value="0" required>
+            <label class="block text-gray-400 text-sm" for="derrotasKO"
+              >KO en contra</label
+            >
+            <input
+              class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+              id="derrotasKO"
+              type="number"
+              value="0"
+              required
+            />
           </div>
 
           <div>
-            <label class="block text-gray-400 text-sm" for="empates">Empates</label>
-            <input class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white" id="empates" type="number" value="0" required>
+            <label class="block text-gray-400 text-sm" for="empates"
+              >Empates</label
+            >
+            <input
+              class="shadow appearance-none border border-gray-600 bg-gray-700 rounded w-full py-2 px-3 text-white"
+              id="empates"
+              type="number"
+              value="0"
+              required
+            />
           </div>
         </div>
       </div>
     </div>
 
     <div class="mt-6 text-right">
-      <button id="btn-guardar-boxeador" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">
+      <button
+        id="btn-guardar-boxeador"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        type="submit"
+      >
         Guardar Boxeador
       </button>
-      <button id="btn-cancelar-edicion-boxeador" type="button" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded ml-2" style="display: none;">
+      <button
+        id="btn-cancelar-edicion-boxeador"
+        type="button"
+        class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded ml-2"
+        style="display: none;"
+      >
         Cancelar Edición
       </button>
     </div>
   </form>
 </div>
 <style>
-  .avatar-placeholder { width: 100px; height: 100px; background-color: #374151; border: 2px dashed #6b7280; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
-  .avatar-placeholder img { width: 100%; height: 100%; object-fit: cover; }
-  .avatar-placeholder-icon { font-size: 40px; color: #6b7280; }
+  .avatar-placeholder {
+    width: 100px;
+    height: 100px;
+    background-color: #374151;
+    border: 2px dashed #6b7280;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .avatar-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .avatar-placeholder-icon {
+    font-size: 40px;
+    color: #6b7280;
+  }
 </style>
