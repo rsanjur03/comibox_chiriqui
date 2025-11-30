@@ -1,0 +1,91 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { db } from "../../lib/firebase.js";
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy
+} from "firebase/firestore";
+
+// ===============================
+// CARGAR TODOS LOS EVENTOS
+// ===============================
+
+const eventosRef = query(
+  collection(db, "eventos"),
+  orderBy("fecha", "desc")
+);
+
+const eventosSnap = await getDocs(eventosRef);
+
+const eventos = eventosSnap.docs.map((d) => ({
+  id: d.id,
+  ...d.data(),
+}));
+---
+
+<BaseLayout title="Admin - Centro de Licencias">
+  <main class="container mx-auto p-6">
+
+    <!-- TÍTULO -->
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold text-white">
+        🪪 Centro de Carnets y Licencias
+      </h1>
+    </div>
+
+    <!-- DESCRIPCIÓN -->
+    <div class="bg-gray-800 p-4 rounded text-gray-200 mb-6">
+      <p>
+        Desde aquí puedes generar los carnets oficiales de boxeadores
+        por cada evento. El sistema evitará automáticamente duplicados
+        dentro del mismo año.
+      </p>
+    </div>
+
+    <!-- LISTADO DE EVENTOS -->
+    {eventos.length === 0 ? (
+      <div class="bg-gray-700 text-white p-6 rounded text-center">
+        No hay eventos registrados todavía.
+      </div>
+    ) : (
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {eventos.map((evento) => (
+          <div class="bg-gray-800 rounded-lg shadow p-5 flex flex-col justify-between">
+            <div>
+              <h2 class="text-xl font-bold text-white mb-2">
+                {evento.nombre || evento.eventoNombre || "Evento sin nombre"}
+              </h2>
+
+              <p class="text-gray-400 text-sm mb-1">
+                <b>Fecha:</b> {evento.fecha || "--"}
+              </p>
+
+              <p class="text-gray-400 text-sm mb-1">
+                <b>Sede:</b> {evento.sede || evento.lugar || "--"}
+              </p>
+
+              {evento.estado && (
+                <p class="text-gray-400 text-sm mb-1">
+                  <b>Estado:</b> {evento.estado}
+                </p>
+              )}
+            </div>
+
+            <!-- BOTÓN GENERAR CARNETS -->
+            <div class="mt-4">
+              <a
+                href={`/licencias/${evento.id}`}
+                class="block text-center bg-yellow-600 hover:bg-yellow-700 text-black font-bold py-2 px-4 rounded transition"
+              >
+                🪪 Generar Carnets de Este Evento
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+
+  </main>
+</BaseLayout>

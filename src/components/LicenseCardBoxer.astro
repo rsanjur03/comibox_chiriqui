@@ -1,0 +1,249 @@
+---
+interface BoxerLicenseProps {
+  id: string;
+  nombreLegal: string;
+  cedula: string;
+  paisProcedencia: string;
+  fechaNacimiento: string;
+  peso: string;
+  fotoURL?: string;
+  numeroLicencia: string;
+}
+
+const boxer = Astro.props as BoxerLicenseProps;
+
+const anioActual = new Date().getFullYear();
+const expiraTexto = `Diciembre ${anioActual}`;
+---
+
+<div class="license-card" id={`license-${boxer.id}`}>
+
+  <!-- ========== HEADER ========== -->
+  <div class="license-header">
+    <div class="license-header-boxing">BOXING</div>
+    <div class="license-header-sub">LICENCIA DE BOXEADOR</div>
+  </div>
+
+  <!-- ========== BODY ========== -->
+  <div class="license-body">
+
+    <!-- IZQUIERDA -->
+    <div class="license-left">
+      <img src="/img/logo-comiboxch.jpg" class="license-logo" />
+      <img src="/img/guantes.png" class="license-gloves" />
+
+      <div class="license-num">
+        No. Licencia<br />
+        <strong>{boxer.numeroLicencia}</strong>
+      </div>
+    </div>
+
+    <!-- CENTRO (FOTO FIJA SIEMPRE IGUAL) -->
+    <div class="license-center">
+      <div class="license-photo-frame">
+        {boxer.fotoURL ? (
+          <img src={boxer.fotoURL} class="license-photo" />
+        ) : (
+          <div class="license-photo-placeholder">FOTO</div>
+        )}
+      </div>
+    </div>
+
+    <!-- DERECHA -->
+    <div class="license-right">
+      <table class="license-data-table">
+        <tr><th>Nombre</th><td>{boxer.nombreLegal}</td></tr>
+        <tr><th>Cédula</th><td>{boxer.cedula}</td></tr>
+        <tr><th>País</th><td>{boxer.paisProcedencia}</td></tr>
+        <tr><th>Nac.</th><td>{boxer.fechaNacimiento}</td></tr>
+        <tr><th>Peso</th><td>{boxer.peso}</td></tr>
+        <tr><th>Exp.</th><td>{expiraTexto}</td></tr>
+      </table>
+
+      <img src="/img/firma-sola.png" class="license-signature" />
+    </div>
+
+  </div>
+
+  <!-- ========== FOOTER ========== -->
+  <div class="license-footer">
+    COMISIÓN DE BOXEO PROFESIONAL DE CHIRIQUÍ
+  </div>
+</div>
+
+<style>
+/* ===== TARJETA BASE ===== */
+.license-card {
+  width: 8.5cm;
+  height: 5.5cm;
+  background: #fff;
+  border: 2px solid #000;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* ===== HEADER ===== */
+.license-header {
+  height: 1cm;
+  display: grid;
+  grid-template-columns: 3cm 5.5cm;
+}
+
+.license-header-boxing {
+  background: #6b3a12;
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.45cm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.18cm;
+}
+
+.license-header-sub {
+  background: #000;
+  color: #fff;
+  font-size: 0.34cm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== BODY ===== */
+.license-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 2.2cm 2.4cm 3.9cm;
+  padding: 0.1cm;
+  gap: 0;
+}
+
+/* ===== IZQUIERDA ===== */
+.license-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.license-logo {
+  width: 100%;
+  height: 2.1cm;
+  object-fit: contain;
+}
+
+.license-gloves {
+  width: 1.2cm;
+}
+
+/* ✅ NÚMERO DE LICENCIA AL 70% */
+.license-num {
+  font-size: 0.27cm;   /* 🔥 antes 0.38cm */
+  font-weight: 900;
+  color: #000;
+  text-align: center;
+}
+
+/* ===== CENTRO (FOTO SIEMPRE MISMO TAMAÑO) ===== */
+.license-center {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.license-photo-frame {
+  width: 2.2cm;
+  height: 2.7cm;
+  border: 2px solid #000;
+  overflow: hidden;
+}
+
+.license-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;       /* ✅ recorta sin deformar */
+  object-position: center;
+}
+
+.license-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  font-size: 0.3cm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+}
+
+/* ===== DERECHA ===== */
+.license-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-left: 0.05cm;
+  height: 100%;
+}
+
+/* ✅ TABLA REDUCIDA AL 70% */
+.license-data-table {
+  width: 70%;
+  height: auto;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.22cm;
+  color: #000;
+}
+
+.license-data-table th {
+  background: #f0f0f0;
+  font-weight: bold;
+  width: 32%;
+  white-space: nowrap;
+}
+
+.license-data-table td {
+  width: 68%;
+  color: #000;
+  background: #fff;
+  padding: 0.06cm;
+  line-height: 1.05;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.license-data-table th,
+.license-data-table td {
+  border: 1px solid #000;
+  vertical-align: middle;
+  text-align: left;
+}
+
+/* Regla especial solo para NOMBRE largo */
+.license-data-table tr:first-child td {
+  font-size: 0.21cm;
+  font-weight: 600;
+  line-height: 1.05;
+}
+
+/* ===== FIRMA GRANDE ===== */
+.license-signature {
+  height: 1.2cm;
+  width: 70%;
+  object-fit: contain;
+  margin-top: 0.05cm;
+}
+
+/* ===== FOOTER ===== */
+.license-footer {
+  height: 0.55cm;
+  background: #000;
+  color: #fff;
+  font-size: 0.28cm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>

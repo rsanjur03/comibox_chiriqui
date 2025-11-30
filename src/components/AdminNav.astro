@@ -1,0 +1,31 @@
+---
+// Navegación del panel de administración
+interface Props {
+    currentPage?: string;
+}
+
+const { currentPage = '' } = Astro.props;
+
+const navItems = [
+    { href: '/admin/boxeadores', label: 'Gestión de Boxeadores', key: 'boxeadores' },
+    { href: '/admin/eventos', label: 'Gestión de Eventos', key: 'eventos' },
+    { href: '/admin/peleas', label: 'Gestión de Peleas', key: 'peleas' },
+    { href: '/admin/finanzas', label: 'Gestión de Finanzas', key: 'finanzas' },
+    { href: '/admin/pesaje', label: 'Gestión de Pesajes', key: 'pesaje' },
+];
+---
+
+<nav class="bg-gray-800 rounded-lg shadow-md p-4 mb-8 flex space-x-4 overflow-x-auto">
+    {navItems.map(item => (
+        <a 
+            href={item.href}
+            class={`font-semibold py-2 px-4 rounded-lg whitespace-nowrap ${
+                currentPage === item.key 
+                    ? 'bg-blue-600 text-white' 
+                    : 'text-gray-300 hover:bg-gray-700'
+            }`}
+        >
+            {item.label}
+        </a>
+    ))}
+</nav>

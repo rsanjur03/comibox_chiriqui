@@ -1,14 +1,15 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 // 1. Leemos las variables de entorno que acabas de crear
 const firebaseConfig = {
-  apiKey: import.meta.env.PUBLIC_FIREBASE_API_KEY,
-  authDomain: import.meta.env.PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.PUBLIC_FIREBASE_APP_ID,
+  apiKey: "AIzaSyCG6eJ6n0cqMwM4RPWxtkzgOS1lrvgUmq8",
+  authDomain: "comibox-chiriqui.firebaseapp.com",
+  projectId: "comibox-chiriqui",
+  storageBucket: "comibox-chiriqui.firebasestorage.app",
+  messagingSenderId: "470144673330",
+  appId: "1:470144673330:web:8df9e11a2855b39e8abe2b",
 };
 
 // 2. Inicializa Firebase
@@ -20,5 +21,10 @@ if (!getApps().length) {
   app = getApp();
 }
 
-// 3. Exportamos la base de datos (db) para usarla en nuestras páginas
+// 3. Exportamos app y la base de datos (db) para usarla en nuestras páginas
+export { app };
 export const db = getFirestore(app);
+export const storage = getStorage(app);
+
+// Exportar getAuth para usar en otros archivos
+export { getAuth } from "firebase/auth";

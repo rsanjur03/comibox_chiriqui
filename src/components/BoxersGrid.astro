@@ -1,0 +1,40 @@
+---
+import BoxerCard from "./BoxerCard.astro";
+interface Boxer {
+  id: string;
+  cedula?: string;
+  nombreLegal?: string;
+  nombreBoxistico?: string;
+  nombre: string;
+  alias?: string;
+  fotoURL?: string;
+  victorias: number;
+  derrotas: number;
+  empates: number;
+  victoriasKO?: number;
+  derrotasKO?: number;
+  provincia?: string;
+  paisProcedencia?: string;
+  guardia?: string;
+  altura?: number;
+  alcance?: number;
+  fechaNacimiento?: string;
+}
+const { boxeadores } = Astro.props as { boxeadores: Boxer[] };
+---
+
+<div
+  id="lista-boxeadores-grid"
+  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
+  style="display:none;"
+>
+  {
+    boxeadores.length ? (
+      boxeadores.map((b) => <BoxerCard boxer={b} />)
+    ) : (
+      <p class="text-center text-gray-400 text-lg col-span-full">
+        No hay boxeadores registrados.
+      </p>
+    )
+  }
+</div>

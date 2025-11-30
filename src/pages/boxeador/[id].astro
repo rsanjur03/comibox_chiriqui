@@ -28,7 +28,7 @@ const boxeadorSnap = await getDoc(boxeadorRef);
 const boxeador = boxeadorSnap.data();
 
 // 2. Buscar todas sus peleas
-async function getPeleas(boxeadorId) {
+async function getPeleas(boxeadorId: any) {
   const peleasRef = collection(db, "peleas");
 
   // Hacemos DOS consultas: una buscándolo como A y otra como B
@@ -58,7 +58,7 @@ const peleas = await getPeleas(id);
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
-    <title>{boxeador.nombre} - Récord - COMIBOX Chiriquí</title>
+    <title>{boxeador?.nombre} - Récord - COMIBOX Chiriquí</title>
 </head>
 <body class="bg-gray-100 min-h-screen">
     
@@ -66,12 +66,12 @@ const peleas = await getPeleas(id);
 
     <div class="container mx-auto p-8">
         <div class="mb-8">
-            <h1 class="text-4xl font-bold text-gray-800">{boxeador.nombre}</h1>
+            <h1 class="text-4xl font-bold text-gray-800">{boxeador?.nombre}</h1>
             <p class="text-2xl text-gray-600">
                 Récord: 
-                <span class="font-bold text-green-600">{boxeador.victorias}</span> - 
-                <span class="font-bold text-red-600">{boxeador.derrotas}</span> - 
-                <span class="font-bold text-gray-500">{boxeador.empates}</span>
+                <span class="font-bold text-green-600">{boxeador?.victorias}</span> - 
+                <span class="font-bold text-red-600">{boxeador?.derrotas}</span> - 
+                <span class="font-bold text-gray-500">{boxeador?.empates}</span>
             </p>
         </div>
 

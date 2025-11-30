@@ -1,0 +1,30 @@
+---
+import { db } from '../lib/firebase.js';
+import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
+
+const q = query(collection(db, 'boxeadores'), orderBy('victorias', 'desc'), limit(3));
+const snapshot = await getDocs(q);
+const boxeadores = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+---
+<section class="mb-12">
+  <h2 class="text-3xl font-bold text-white mb-6 text-center">Boxeadores Destacados</h2>
+  <div id="boxeadores-destacados-container" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {boxeadores.length ? (
+      boxeadores.map((b : any) => {
+        const record = `${b.victorias}-${b.derrotas}-${b.empates}`;
+        const aliasDisplay = b.alias ? <p class="text-md text-gray-400 italic mb-2">"{b.alias}"</p> : null;
+        return (
+          <div class="bg-gray-800 rounded-lg shadow-lg p-6 text-center border-t-4 border-red-600">
+            <h3 class="text-2xl font-bold text-white">{b.nombre}</h3>
+            {aliasDisplay}
+            <p class="text-3xl font-black text-red-400 my-2">{record}</p>
+            <p class="text-sm text-gray-400">(V-D-E)</p>
+            <a href="/boxeadores" class="mt-4 inline-block text-blue-400 hover:text-blue-300 text-sm font-semibold">Ver Perfil →</a>
+          </div>
+        );
+      })
+    ) : (
+      <p class="text-center text-gray-400 text-lg col-span-3">No hay boxeadores registrados.</p>
+    )}
+  </div>
+</section>

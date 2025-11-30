@@ -1,0 +1,121 @@
+---
+interface Boxer {
+  id: string;
+  cedula?: string;
+  nombreLegal?: string;
+  nombreBoxistico?: string;
+  nombre: string;
+  alias?: string;
+  fotoURL?: string;
+  victorias: number;
+  derrotas: number;
+  empates: number;
+  victoriasKO?: number;
+  derrotasKO?: number;
+  provincia?: string;
+  paisProcedencia?: string;
+  guardia?: string;
+  altura?: number;
+  alcance?: number;
+  fechaNacimiento?: string;
+}
+const { boxeadores } = Astro.props as { boxeadores: Boxer[] };
+---
+
+<div
+  id="lista-boxeadores-tabla"
+  class="bg-gray-800 rounded-lg shadow-lg overflow-hidden"
+>
+  {
+    boxeadores.length === 0 ? (
+      <p class="text-gray-400 text-lg p-6">No hay boxeadores registrados.</p>
+    ) : (
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left text-gray-400">
+          <thead class="text-xs text-gray-400 uppercase bg-gray-700">
+            <tr>
+              <th scope="col" class="py-3 px-6">
+                Foto
+              </th>
+              <th scope="col" class="py-3 px-6">
+                Nombre
+              </th>
+              <th scope="col" class="py-3 px-6">
+                R écord
+              </th>
+              <th scope="col" class="py-3 px-6">
+                País/Prov.
+              </th>
+              <th scope="col" class="py-3 px-6 hidden md:table-cell">
+                Guardia
+              </th>
+              <th scope="col" class="py-3 px-6 hidden md:table-cell">
+                Altura
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {boxeadores.map((b) => {
+              const isDeb =
+                (b.victorias ?? 0) === 0 &&
+                (b.derrotas ?? 0) === 0 &&
+                (b.empates ?? 0) === 0;
+              const vKO =
+                (b.victoriasKO ?? 0) > 0 ? `(${b.victoriasKO ?? 0})` : "";
+              const dKO =
+                (b.derrotasKO ?? 0) > 0 ? `(${b.derrotasKO ?? 0})` : "";
+              const record = isDeb
+                ? "Debutante"
+                : `${b.victorias ?? 0}${vKO}-${b.derrotas ?? 0}${dKO}-${b.empates ?? 0}`;
+              const location = `${b.provincia || b.paisProcedencia ? (b.provincia || "") + (b.provincia && b.paisProcedencia ? ", " : "") + (b.paisProcedencia || "") : "N/D"}`;
+              const foto = b.fotoURL ? (
+                <img
+                  src={b.fotoURL}
+                  alt="foto"
+                  class="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <div class="w-10 h-10 rounded-full bg-gray-700" />
+              );
+              return (
+                <tr class="bg-gray-800 border-b border-gray-700 hover:bg-gray-600">
+                  <td class="py-4 px-6">{foto}</td>
+                  <th
+                    scope="row"
+                    class="py-4 px-6 font-medium text-white whitespace-nowrap"
+                  >
+                    {b.nombreBoxistico || b.nombre}
+                    {b.nombreLegal && (
+                      <span class="block text-xs text-gray-400 font-normal">
+                        {b.nombreLegal}
+                      </span>
+                    )}
+                    {b.alias && (
+                      <span class="block text-gray-500 font-normal italic text-xs">
+                        "{b.alias}"
+                      </span>
+                    )}
+                  </th>
+                  <td class="py-4 px-6 text-lg font-medium">
+                    {isDeb ? (
+                      <span class="text-yellow-400">Debutante</span>
+                    ) : (
+                      record
+                    )}
+                  </td>
+                  <td class="py-4 px-6">{location}</td>
+                  <td class="py-4 px-6 hidden md:table-cell">
+                    {b.guardia ?? "N/D"}
+                  </td>
+                  <td class="py-4 px-6 hidden md:table-cell">
+                    {b.altura ? `${b.altura} cm` : "N/D"}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+</div>

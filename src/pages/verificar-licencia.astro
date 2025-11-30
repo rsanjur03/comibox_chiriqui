@@ -1,0 +1,157 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { db } from "../lib/firebase.js";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  getDoc
+} from "firebase/firestore";
+
+let resultado = null;
+let error = null;
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  const criterio = formData.get("criterio")?.toString().trim();
+
+  if (!criterio) {
+    error = "Debe ingresar un número de licencia o una cédula.";
+  } else {
+    try {
+      // =============================
+      // 1. BUSCAR POR NÚMERO LICENCIA
+      // =============================
+      let q = query(
+        collection(db, "licencias"),
+        where("numeroLicencia", "==", criterio)
+      );
+
+      let snap = await getDocs(q);
+
+      // =============================
+      // 2. SI NO ENCUENTRA, BUSCAR POR CÉDULA
+      // =============================
+      if (snap.empty) {
+        const q2 = query(
+          collection(db, "boxeadores"),
+          where("cedula", "==", criterio)
+        );
+
+        const snapBox = await getDocs(q2);
+
+        if (!snapBox.empty) {
+          const boxeadorId = snapBox.docs[0].id;
+
+          const q3 = query(
+            collection(db, "licencias"),
+            where("boxeadorId", "==", boxeadorId)
+          );
+
+          snap = await getDocs(q3);
+        }
+      }
+
+      if (snap.empty) {
+        error = "❌ No se encontró ninguna licencia con esos datos.";
+      } else {
+        const licencia = snap.docs[0].data();
+
+        // =============================
+        // 3. CARGAR DATOS DEL BOXEADOR
+        // =============================
+        const boxerSnap = await getDoc(
+          doc(db, "boxeadores", licencia.boxeadorId)
+        );
+
+        if (boxerSnap.exists()) {
+          const boxer = boxerSnap.data();
+
+          resultado = {
+            nombre: boxer.nombreLegal,
+            cedula: boxer.cedula,
+            pais: boxer.paisProcedencia,
+            foto: boxer.fotoURL,
+            anio: licencia.anio,
+            numeroLicencia: licencia.numeroLicencia,
+            eventoNombre: licencia.eventoNombre,
+          };
+        } else {
+          error = "Licencia encontrada, pero el boxeador no existe.";
+        }
+      }
+
+    } catch (e) {
+      console.error(e);
+      error = "Error al consultar la base de datos.";
+    }
+  }
+}
+---
+
+<BaseLayout title="Verificador de Licencias - COMIBOX">
+  <main class="container mx-auto p-6 max-w-xl">
+
+    <h1 class="text-3xl font-bold text-white text-center mb-6">
+      Verificador Público de Licencias
+    </h1>
+
+    <form method="POST" class="bg-gray-800 p-6 rounded shadow mb-6">
+      <label class="block text-gray-300 mb-2 font-semibold">
+        Número de Licencia o Cédula:
+      </label>
+      <input
+        name="criterio"
+        type="text"
+        placeholder="Ej: CH-2025-0007 o 4-830-1595"
+        class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600 mb-4"
+        required
+      />
+
+      <button
+        type="submit"
+        class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded"
+      >
+        Verificar Licencia
+      </button>
+    </form>
+
+    {error && (
+      <div class="bg-red-700 text-white p-4 rounded mb-4 text-center font-bold">
+        {error}
+      </div>
+    )}
+
+    {resultado && (
+      <div class="bg-white rounded shadow overflow-hidden">
+
+        <div class="bg-green-700 text-white text-center py-3 font-bold">
+          ✅ LICENCIA VÁLIDA
+        </div>
+
+        <div class="p-4 flex gap-4">
+          <div>
+            <img
+              src={resultado.foto}
+              alt={resultado.nombre}
+              class="w-28 h-36 object-cover rounded border"
+            />
+          </div>
+
+          <div class="text-sm">
+            <p><b>Nombre:</b> {resultado.nombre}</p>
+            <p><b>Cédula:</b> {resultado.cedula}</p>
+            <p><b>País:</b> {resultado.pais}</p>
+            <p><b>Año:</b> {resultado.anio}</p>
+            <p><b>N° Licencia:</b> {resultado.numeroLicencia}</p>
+            <p><b>Evento:</b> {resultado.eventoNombre}</p>
+          </div>
+        </div>
+
+      </div>
+    )}
+
+  </main>
+</BaseLayout>

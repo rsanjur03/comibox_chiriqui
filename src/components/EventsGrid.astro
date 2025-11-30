@@ -1,0 +1,12 @@
+---
+import EventCard from './EventCard.astro';
+interface Evento { id:string; nombre:string; fecha:string; hora?:string; lugar?:string; ciudad?:string; provincia?:string; promotor?:string; flyerURL?:string; }
+const { eventos } = Astro.props as { eventos: Evento[] };
+---
+<div id="lista-eventos-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  {eventos.length ? (
+    eventos.map((ev) => <EventCard evento={ev} />)
+  ) : (
+    <p class="text-gray-400 text-lg col-span-full">No hay eventos registrados.</p>
+  )}
+</div>

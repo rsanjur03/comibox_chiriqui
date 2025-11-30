@@ -1,0 +1,25 @@
+---
+import { db } from '../lib/firebase.js';
+import { collection, getDocs } from 'firebase/firestore';
+
+const boxeadoresSnapshot = await getDocs(collection(db, 'boxeadores'));
+const eventosSnapshot = await getDocs(collection(db, 'eventos'));
+const peleasSnapshot = await getDocs(collection(db, 'peleas'));
+---
+<section class="mb-12">
+  <h2 class="text-2xl font-bold text-white mb-6 text-center">Nuestra Comisión en Números</h2>
+  <div id="resumen-estadistico" class="grid grid-cols-3 gap-6">
+    <div class="bg-gray-800 p-6 rounded-lg text-center">
+      <p class="text-4xl font-extrabold text-blue-400" id="stat-boxeadores">{boxeadoresSnapshot.size}</p>
+      <p class="text-sm text-gray-400 mt-1">Boxeadores</p>
+    </div>
+    <div class="bg-gray-800 p-6 rounded-lg text-center">
+      <p class="text-4xl font-extrabold text-blue-400" id="stat-eventos">{eventosSnapshot.size}</p>
+      <p class="text-sm text-gray-400 mt-1">Eventos Supervisados</p>
+    </div>
+    <div class="bg-gray-800 p-6 rounded-lg text-center">
+      <p class="text-4xl font-extrabold text-blue-400" id="stat-peleas">{peleasSnapshot.size}</p>
+      <p class="text-sm text-gray-400 mt-1">Peleas Sancionadas</p>
+    </div>
+  </div>
+</section>

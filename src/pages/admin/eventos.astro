@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdminHeader from '../../components/AdminHeader.astro';
+import EventsManager from '../../components/EventsManager';
+---
+
+<BaseLayout title="Gestión de Eventos - COMIBOX Admin">
+    <div id="panel-contenido" class="container mx-auto p-4 md:p-8">
+        <AdminHeader />
+        <EventsManager client:load />
+    </div>
+</BaseLayout>
